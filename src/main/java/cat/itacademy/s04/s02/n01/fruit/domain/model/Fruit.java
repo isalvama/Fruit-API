@@ -1,4 +1,4 @@
-package cat.itacademy.s04.s02.n01.fruit;
+package cat.itacademy.s04.s02.n01.fruit.domain.model;
 
 public class Fruit {
     private final Long id;
