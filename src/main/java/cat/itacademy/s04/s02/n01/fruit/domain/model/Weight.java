@@ -1,5 +1,7 @@
 package cat.itacademy.s04.s02.n01.fruit.domain.model;
 
+import cat.itacademy.s04.s02.n01.fruit.domain.exception.InvalidWeightException;
+
 public record Weight(double amount, Magnitude magnitude) {
 
     public Weight {

@@ -1,4 +1,6 @@
 package cat.itacademy.s04.s02.n01.fruit.domain.model;
+import cat.itacademy.s04.s02.n01.fruit.domain.exception.InvalidFruitNameException;
+
 import java.util.Arrays;
 import java.util.stream.Collectors;
 

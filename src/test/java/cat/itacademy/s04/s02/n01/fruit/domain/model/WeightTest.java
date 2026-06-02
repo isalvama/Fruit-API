@@ -1,5 +1,6 @@
 package cat.itacademy.s04.s02.n01.fruit.domain.model;
 
+import cat.itacademy.s04.s02.n01.fruit.domain.exception.InvalidWeightException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
