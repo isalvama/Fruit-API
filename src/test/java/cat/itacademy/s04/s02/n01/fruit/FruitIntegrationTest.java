@@ -70,7 +70,7 @@ class FruitIntegrationTest {
     @DisplayName("GET /api/users")
     class GetFruits {
         @Test
-        void getFruits_returns201WithListOfRegisteredFruitData() throws Exception {
+        void getFruits_returns200WithListOfRegisteredFruitData() throws Exception {
             String fruit2Name = "Kiwi";
             double fruit2WeightAmount = 0.3;
             Fruit fruit2 = Fruit.create(FruitName.of(fruit2Name), Weight.inKiloGrams(fruit2WeightAmount));
@@ -101,5 +101,48 @@ class FruitIntegrationTest {
                     .andExpect(jsonPath("$.detail", Matchers.containsString("no registered fruits")));
         }
 
+        @Nested
+        @DisplayName("GET /api/users/{id}")
+        class GetFruitById {
+            @Test
+            void getFruitById_returns200WithFruitData() throws Exception {
+                String fruitName = "Kiwi";
+                double fruitWeightAmount = 0.3;
+                Fruit fruit = Fruit.create(FruitName.of(fruitName), Weight.inKiloGrams(fruitWeightAmount));
+                fruitRepository.saveFruit(FRUIT);
+                fruitRepository.saveFruit(fruit);
+                ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(API_URL + "/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON));
+
+                result.andExpect(status().isOk())
+                        .andExpect(jsonPath("$.id").value(1))
+                        .andExpect(jsonPath("$.name").value(NAME))
+                        .andExpect(jsonPath("$.weightInKg").value(WEIGHT));
+
+
+
+                ResultActions result2 = mockMvc.perform(MockMvcRequestBuilders.get(API_URL + "/{id}", 2)
+                        .contentType(MediaType.APPLICATION_JSON));
+
+                result2.andExpect(status().isOk())
+                        .andExpect(jsonPath("$.id").value(2))
+                        .andExpect(jsonPath("$.name").value(fruitName))
+                        .andExpect(jsonPath("$.weightInKg").value(fruitWeightAmount));
+            }
+
+            @Test
+            @DisplayName("returns 404 Not Found when there are no registered fruits")
+            void getFruitById_returns404NotFound() throws Exception {
+                Long id = 103L;
+
+                ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(API_URL + "/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON));
+
+                result.andExpect(status().isNotFound())
+                        .andExpect(jsonPath("$.title", Matchers.containsString("Fruit Not Found")))
+                        .andExpect(jsonPath("$.detail", Matchers.containsString("no fruits registered")))
+                        .andExpect(jsonPath("$.detail", Matchers.containsString(id.toString())));
+            }
+        }
     }
 }

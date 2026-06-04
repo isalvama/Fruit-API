@@ -2,6 +2,7 @@ package cat.itacademy.s04.s02.n01.fruit.controller;
 
 import cat.itacademy.s04.s02.n01.fruit.application.service.CreateFruitService;
 import cat.itacademy.s04.s02.n01.fruit.application.service.GetAllFruitsService;
+import cat.itacademy.s04.s02.n01.fruit.application.service.GetFruitByIdService;
 import cat.itacademy.s04.s02.n01.fruit.controller.exception.FruitNotFoundException;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.FruitName;
@@ -26,6 +27,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -52,6 +54,9 @@ class FruitRestControllerTest {
 
     @MockitoBean
     private GetAllFruitsService getAllFruitsUseCase;
+
+    @MockitoBean
+    private GetFruitByIdService getFruitByIdUseCase;
 
     @BeforeEach
     void setUp() {
@@ -165,6 +170,53 @@ class FruitRestControllerTest {
                         .andExpect(jsonPath("$.detail", Matchers.containsString(exceptionMessage)));
 
                 verify(getAllFruitsUseCase).execute();
+            }
+        }
+
+        @Nested
+        @DisplayName("GET /api/fruits/{id}")
+        class GetFruitById {
+
+            @Test
+            void getFruitById_returns200WithFruitData() throws Exception {
+                when(getFruitByIdUseCase.execute(FRUIT.getId())).thenReturn(FRUIT);
+
+                ResultActions result = mockMvc.perform(get(API_URL_STRING + "/{id}", FRUIT.getId())
+                        .contentType(MediaType.APPLICATION_JSON));
+
+                result.andExpect(status().isOk())
+                        .andExpect(jsonPath("$.id").value(FRUIT.getId()))
+                        .andExpect(jsonPath("$.name").value(NAME_OF_FRUIT))
+                        .andExpect(jsonPath("$.weightInKg").value(WEIGHT_AMOUNT));
+
+                verify(getFruitByIdUseCase).execute(FRUIT.getId());
+            }
+
+            @Test
+            void getFruitById_returns404FruitNotFoundWithExceptionDetails() throws Exception {
+                String exceptionMessage = "There are no fruits registered with the id";
+                when(getFruitByIdUseCase.execute(FRUIT.getId())).thenThrow(new FruitNotFoundException(exceptionMessage + FRUIT.getId()));
+                ResultActions result = mockMvc.perform(get(API_URL_STRING + "/{id}", FRUIT.getId())
+                        .contentType(MediaType.APPLICATION_JSON));
+
+                result.andExpect(status().isNotFound())
+                        .andExpect(jsonPath("$.title", containsString("Fruit Not Found")))
+                        .andExpect(jsonPath("$.detail", containsString("no fruits registered")))
+                        .andExpect(jsonPath("$.detail", containsString(String.valueOf(FRUIT.getId()))));
+
+                verify(getFruitByIdUseCase).execute(FRUIT.getId());
+            }
+
+            @Test
+            void getFruitById_returns400BadRequestWhenIdIsNegative() throws Exception {
+                ResultActions result = mockMvc.perform(get(API_URL_STRING + "/{id}", -1)
+                        .contentType(MediaType.APPLICATION_JSON));
+
+                result.andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.title", containsString("Validation Error")))
+                        .andExpect(jsonPath("$.errors").exists());
+
+                verifyNoInteractions(getFruitByIdUseCase);
             }
         }
     }
