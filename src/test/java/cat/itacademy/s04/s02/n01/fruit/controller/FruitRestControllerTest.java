@@ -1,6 +1,8 @@
 package cat.itacademy.s04.s02.n01.fruit.controller;
 
 import cat.itacademy.s04.s02.n01.fruit.application.service.CreateFruitService;
+import cat.itacademy.s04.s02.n01.fruit.application.service.GetAllFruitsService;
+import cat.itacademy.s04.s02.n01.fruit.controller.exception.FruitNotFoundException;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.FruitName;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Weight;
@@ -18,6 +20,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import tools.jackson.databind.ObjectMapper;
 
+
+import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
@@ -46,8 +50,11 @@ class FruitRestControllerTest {
     @MockitoBean
     private CreateFruitService createFruitUseCase;
 
+    @MockitoBean
+    private GetAllFruitsService getAllFruitsUseCase;
+
     @BeforeEach
-    void setUp(){
+    void setUp() {
         objectMapper = new ObjectMapper();
     }
 
@@ -72,7 +79,7 @@ class FruitRestControllerTest {
 
         @Test
         @DisplayName("returns 400 Bad Request when input data is invalid (name is blank)")
-        void createUser_returns400ValidationErrorInInputDataBlankName() throws Exception {
+        void createFruit_returns400ValidationErrorInInputDataBlankName() throws Exception {
             String jsonInput =
                     "{\"name\": \"\", \"weightAmount\" : 0.5, \"magnitude\": \"POUNDS\"}";
 
@@ -90,7 +97,7 @@ class FruitRestControllerTest {
 
         @Test
         @DisplayName("returns 400 Bad Request when input data is invalid (weightAmount is negative)")
-        void createUser_returns400ValidationErrorInInputDataWeightAmountIsNegative() throws Exception {
+        void createFruit_returns400ValidationErrorInInputDataWeightAmountIsNegative() throws Exception {
             String jsonInput =
                     "{\"name\": \"Pear\", \"weightAmount\" : -0.5, \"magnitude\": \"KILOGRAMS\"}";
 
@@ -109,7 +116,7 @@ class FruitRestControllerTest {
 
         @Test
         @DisplayName("returns 400 Bad Request when input data is invalid (invalid magnitude)")
-        void createUser_returns400ValidationErrorInInputDataInvalidMagnitude() throws Exception {
+        void createFruit_returns400ValidationErrorInInputDataInvalidMagnitude() throws Exception {
             String jsonInput =
                     "{\"name\": \"orange\", \"weightAmount\" : 0.5, \"magnitude\": \"INVALID_MAGNITUDE\"}";
 
@@ -125,6 +132,40 @@ class FruitRestControllerTest {
             verifyNoInteractions(createFruitUseCase);
         }
 
+        @Nested
+        @DisplayName("GET /api/fruits")
+        class GetFruits {
 
+            @Test
+            void getFruits_returns201WithFruitData() throws Exception {
+                when(getAllFruitsUseCase.execute()).thenReturn(List.of(FRUIT));
+
+                ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(API_URL_STRING)
+                        .contentType(MediaType.APPLICATION_JSON));
+
+                result.andExpect(status().isOk())
+                        .andExpect(jsonPath("$[0].id").value(1))
+                        .andExpect(jsonPath("$[0].name").value(NAME_OF_FRUIT))
+                        .andExpect(jsonPath("$[0].weightInKg").value(WEIGHT_AMOUNT));
+
+                verify(getAllFruitsUseCase).execute();
+            }
+
+            @Test
+            @DisplayName("returns 404 Not Found when the service throws a FruitNotFoundException")
+            void getFruit_returns404WhenFruitNotFoundExceptionIsThrown() throws Exception {
+                String exceptionMessage = "There are no registered fruits.";
+                when(getAllFruitsUseCase.execute()).thenThrow(new FruitNotFoundException(exceptionMessage));
+
+                ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(API_URL_STRING)
+                        .contentType(MediaType.APPLICATION_JSON));
+
+                result.andExpect(status().isNotFound())
+                        .andExpect(jsonPath("$.title", Matchers.containsString("Fruit Not Found")))
+                        .andExpect(jsonPath("$.detail", Matchers.containsString(exceptionMessage)));
+
+                verify(getAllFruitsUseCase).execute();
+            }
+        }
     }
 }
