@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -25,5 +26,11 @@ public class H2FruitRepositoryImpl implements FruitRepository{
     public List<Fruit> getAllFruits() {
         List<FruitJpaEntity> allFruits = jpaSpringDataRepository.findAll();
         return allFruits.stream().map(FruitMapper::toDomain).toList();
+    }
+
+    @Override
+    public Optional<Fruit> getFruitById(Long id){
+        Optional<FruitJpaEntity> fruit = jpaSpringDataRepository.findById(String.valueOf(id));
+        return fruit.map(FruitMapper::toDomain);
     }
 }
