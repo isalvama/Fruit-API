@@ -1,5 +1,6 @@
 package cat.itacademy.s04.s02.n01.fruit.controller.exception_handler;
 
+import cat.itacademy.s04.s02.n01.fruit.controller.exception.FruitNotFoundException;
 import cat.itacademy.s04.s02.n01.fruit.controller.exception.InvalidRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -26,9 +27,18 @@ import java.util.Map;
 
     @ResponseBody
     @ExceptionHandler(InvalidRequestException.class)
-    public ProblemDetail handleUserNotFoundException (InvalidRequestException ex) {
+    public ProblemDetail handleInvalidRequestException (InvalidRequestException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setTitle("Invalid Request Input Data");
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
+    }
+
+    @ResponseBody
+    @ExceptionHandler(FruitNotFoundException.class)
+    public ProblemDetail handleFruitNotFoundException (FruitNotFoundException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        problemDetail.setTitle("Fruit Not Found");
         problemDetail.setDetail(ex.getMessage());
         return problemDetail;
     }

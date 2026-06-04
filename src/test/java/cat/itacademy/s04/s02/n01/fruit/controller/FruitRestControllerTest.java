@@ -36,7 +36,7 @@ class FruitRestControllerTest {
     private static final String API_URL_STRING = "/api/fruits";
 
     private static final Fruit FRUIT = new Fruit(1L, FruitName.of(NAME_OF_FRUIT), Weight.inKiloGrams(WEIGHT_AMOUNT));
-    private static final CreateFruitResponseDTO FRUIT_RESPONSE = new CreateFruitResponseDTO(1L, NAME_OF_FRUIT, WEIGHT_AMOUNT);
+    private static final FruitResponseDTO FRUIT_RESPONSE = new FruitResponseDTO(1L, NAME_OF_FRUIT, WEIGHT_AMOUNT);
 
     private ObjectMapper objectMapper;
 
