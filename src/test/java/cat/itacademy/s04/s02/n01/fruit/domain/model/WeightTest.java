@@ -33,6 +33,19 @@ class WeightTest {
         }
     }
 
+    @Test
+    void toDomainWeight_mapsDataToWeightInstance() {
+        Weight weight1 = Weight.toDomainWeight(AMOUNT, Magnitude.KILOGRAMS);
+        assertNotNull(weight1);
+        assertEquals(AMOUNT, weight1.amount());
+        assertEquals(Magnitude.KILOGRAMS, weight1.magnitude());
+
+        Weight weight2 = Weight.toDomainWeight(AMOUNT, Magnitude.POUNDS);
+        assertNotNull(weight2);
+        assertEquals(AMOUNT, weight2.amount());
+        assertEquals(Magnitude.POUNDS, weight2.magnitude());
+    }
+
     @Nested
     @DisplayName("Weight Validation")
     class WeightValidation {

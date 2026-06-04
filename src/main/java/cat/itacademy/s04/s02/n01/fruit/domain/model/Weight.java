@@ -9,6 +9,14 @@ public record Weight(double amount, Magnitude magnitude) {
         magnitude.validate(amount);
     }
 
+    public Weight convertToKgWeight(){
+        return new Weight(magnitude.convertToKg(this.amount), Magnitude.KILOGRAMS);
+    }
+
+    public static Weight toDomainWeight(double weightAmount, Magnitude magnitude) {
+        return new Weight(weightAmount, magnitude);
+    }
+
     public static Weight inKiloGrams(double amount){
         return new Weight(amount, Magnitude.KILOGRAMS);
     }
