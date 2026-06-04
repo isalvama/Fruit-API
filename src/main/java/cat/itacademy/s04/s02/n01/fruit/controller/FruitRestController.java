@@ -2,7 +2,6 @@ package cat.itacademy.s04.s02.n01.fruit.controller;
 
 import cat.itacademy.s04.s02.n01.fruit.application.usecases.CreateFruitUseCase;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
-import cat.itacademy.s04.s02.n01.fruit.domain.model.Weight;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +22,9 @@ public class FruitRestController {
 
     private final CreateFruitUseCase createFruitUseCase;
 
-    @PostMapping("/in-kg")
-    public ResponseEntity<CreateFruitResponseDTO> createFruitInKg(@Valid @RequestBody CreateFruitDTO request){
-        Fruit fruit = createFruitUseCase.createFruitInKg(request.name(), Weight.inKiloGrams(request.weight()));
+    @PostMapping
+    public ResponseEntity<CreateFruitResponseDTO> createFruit(@Valid @RequestBody CreateFruitRequestDTO request){
+        Fruit fruit = createFruitUseCase.createFruit(request.name(), request.weightAmount(), request.magnitude());
         CreateFruitResponseDTO createFruitResponseDTO = CreateFruitResponseDTO.from(fruit);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
