@@ -3,5 +3,5 @@ import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
 
 public interface CreateFruitUseCase {
 
-    public Fruit createFruit(String name, double weightAmount, String magnitude);
+    Fruit createFruit(String name, double weightAmount, String magnitude);
 }
