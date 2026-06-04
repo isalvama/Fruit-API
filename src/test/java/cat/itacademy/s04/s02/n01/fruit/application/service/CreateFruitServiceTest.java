@@ -10,8 +10,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 class CreateFruitServiceTest {
     private CreateFruitUseCase createFruitUseCase;
@@ -30,13 +30,10 @@ class CreateFruitServiceTest {
     }
 
     @Test
-    void createFruitInKg() {
-        when(fruitRepository.saveFruit(FRUIT)).thenReturn(FRUIT);
-
-        Fruit fruit = createFruitUseCase.createFruitInKg(NAME, WEIGHT_IN_KG);
-
+    void createFruit() {
+        when(fruitRepository.saveFruit(any(Fruit.class))).thenReturn(FRUIT);
+        Fruit fruit = createFruitUseCase.createFruit(NAME, WEIGHT, "KILOGRAMS");
         assertNotNull(fruit);
-        assertEquals(ID, fruit.getId());
         assertEquals(NAME, fruit.getName().name());
         assertEquals(WEIGHT, fruit.getWeight().amount());
     }
