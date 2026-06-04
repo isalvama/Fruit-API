@@ -34,5 +34,36 @@ class MagnitudeTest {
             assertTrue(exception.getMessage().contains(Magnitude.POUNDS.getSymbol()));
 
         }
+
+        @Test
+        void amountShouldNotChangeWhenMagnitudeIsKG() {
+            double amount = 1.0;
+            double result = Magnitude.KILOGRAMS.convertToKg(amount);
+
+            assertEquals(amount, result);
+        }
+
+        @Test
+        void amountShouldChangeAccordingToRatioWhenMagnitudeIsPounds() {
+            double result = Magnitude.POUNDS.convertToKg(1.0);
+            assertEquals(Magnitude.POUNDS.getToKgRatio(), result);
+        }
+
+        @Test
+        void shouldThrowInvalidWeightExceptionWhenMagnitudeIsInvalid() {
+            assertThrows(InvalidWeightException.class, () -> {Magnitude.fromString("Not Magnitud Value");});
+            assertThrows(InvalidWeightException.class, () -> {Magnitude.fromString("Kilo");});
+            assertThrows(InvalidWeightException.class, () -> {Magnitude.fromString("lbs");});
+
+
+        }
+
+        @Test
+        void shouldNotThrowExceptionWhenMagnitudeIsValid() {
+            assertDoesNotThrow(() -> {Magnitude.fromString("kilograms");});
+            assertDoesNotThrow(() -> {Magnitude.fromString("KiLoGramS");});
+            assertDoesNotThrow(() -> {Magnitude.fromString("pounds");});
+            assertDoesNotThrow(() -> {Magnitude.fromString("PoUnDs");});
+        }
     }
 }
