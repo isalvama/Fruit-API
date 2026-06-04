@@ -1,5 +1,5 @@
 package cat.itacademy.s04.s02.n01.fruit;
-import cat.itacademy.s04.s02.n01.fruit.controller.CreateFruitDTO;
+import cat.itacademy.s04.s02.n01.fruit.controller.CreateFruitRequestDTO;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -24,6 +24,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class FruitIntegrationTest {
     private static final String NAME = "Pineapple";
     private static final Double WEIGHT = 4.6;
+    private static final String MAGNITUDE = "KILOGRAMS";
+    private static final String API_URL = "/api/fruits";
 
     @Autowired
     private MockMvc mockMvc;
@@ -36,15 +38,14 @@ class FruitIntegrationTest {
     class CreateUser {
         @Test
         void createFruitInKg_returns201WithLocationAndBodyFruitWithId() throws Exception {
-            CreateFruitDTO createFruitDTO = new CreateFruitDTO(NAME, WEIGHT);
-            String id = "1";
+            CreateFruitRequestDTO createFruitDTO = new CreateFruitRequestDTO(NAME, WEIGHT, MAGNITUDE);
 
-            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/api/fruits/in-kg")
+            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post(API_URL)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(createFruitDTO)));
             result.andExpect(status().isCreated())
-                    .andExpect(header().string("Location", containsString("/in-kg/" + id)))
-                    .andExpect(jsonPath("$.id").value(id))
+                    .andExpect(header().string("Location", containsString(API_URL + "/" + 1)))
+                    .andExpect(jsonPath("$.id").value(1))
                     .andExpect(jsonPath("$.name").value(NAME))
                     .andExpect(jsonPath("$.weightInKg").value(WEIGHT));
         }
