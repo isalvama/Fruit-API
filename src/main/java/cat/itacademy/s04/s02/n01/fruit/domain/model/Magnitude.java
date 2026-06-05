@@ -1,7 +1,10 @@
 package cat.itacademy.s04.s02.n01.fruit.domain.model;
 
+import cat.itacademy.s04.s02.n01.fruit.controller.exception.InvalidRequestException;
 import cat.itacademy.s04.s02.n01.fruit.domain.exception.InvalidWeightException;
 import lombok.Getter;
+
+import java.util.Arrays;
 
 public enum Magnitude {
     KILOGRAMS("Kg", 1.0, 600.0),
@@ -38,6 +41,11 @@ public enum Magnitude {
         } catch (IllegalArgumentException e) {
             throw new InvalidWeightException("Magnitude is invalid");
         }
+    }
+
+    public static boolean validateMagnitude(String magnitude){
+        return Arrays.stream(Magnitude.values())
+                .anyMatch(m -> magnitude.equalsIgnoreCase(m.name()));
     }
 
 }
