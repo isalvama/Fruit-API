@@ -16,18 +16,14 @@ public record CreateFruitRequestDTO(
         String name,
         @Positive (message = "Weight Amount cannot be negative")
         double weightAmount,
-        @NotNull(message = "Magnitude cannot be null")
+        @NotBlank(message = "Magnitude cannot be null or blank")
         String magnitude
 ) {
-    public CreateFruitRequestDTO{
+    public CreateFruitRequestDTO {
         validateMagnitude(magnitude);
     }
 
-    public void validateMagnitude(String magnitude){
-        boolean isValid = Arrays.stream(Magnitude.values())
-                .anyMatch(m -> magnitude.equalsIgnoreCase(m.name()));
-        if (!isValid) {
-            throw new InvalidRequestException("Magnitude is not valid");
-        }
+    private void validateMagnitude(String magnitude) {
+        Magnitude.validateMagnitude(magnitude);
     }
 }
