@@ -65,5 +65,18 @@ class MagnitudeTest {
             assertDoesNotThrow(() -> {Magnitude.fromString("pounds");});
             assertDoesNotThrow(() -> {Magnitude.fromString("PoUnDs");});
         }
+
+        @Test
+        void validateMagnitudeShouldReturnTrueWhenStringMatchesAnyNameConstant() {
+           assertTrue(Magnitude.validateMagnitude("kilograms"));
+           assertTrue(Magnitude.validateMagnitude("pounds"));
+        }
+
+        @Test
+        void validateMagnitudeShouldReturnFalseWhenStringMatchesAnyNameConstant() {
+            assertFalse(Magnitude.validateMagnitude("kilo"));
+            assertFalse(Magnitude.validateMagnitude("Lbs"));
+            assertFalse(Magnitude.validateMagnitude("invalid magn"));
+        }
     }
 }

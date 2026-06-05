@@ -20,5 +20,10 @@ class CreateFruitRequestDTOTest {
         );
     }
 
-
+    @Test
+    void constructor_withBlankMagnitude_throwsInvalidRequestException(){
+        assertThrows(InvalidRequestException.class, () -> {new CreateFruitRequestDTO("Apple", 1.0, "");
+                }
+        );
+    }
 }

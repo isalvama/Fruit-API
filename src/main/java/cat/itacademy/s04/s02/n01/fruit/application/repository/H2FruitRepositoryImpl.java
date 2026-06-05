@@ -2,7 +2,9 @@ package cat.itacademy.s04.s02.n01.fruit.application.repository;
 
 import cat.itacademy.s04.s02.n01.fruit.application.repository.entity.FruitJpaEntity;
 import cat.itacademy.s04.s02.n01.fruit.application.repository.entity.FruitMapper;
+import cat.itacademy.s04.s02.n01.fruit.controller.exception.FruitNotFoundException;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
+import cat.itacademy.s04.s02.n01.fruit.domain.model.Weight;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -17,20 +19,31 @@ public class H2FruitRepositoryImpl implements FruitRepository{
 
     @Override
     public Fruit saveFruit(Fruit fruit) {
-        FruitJpaEntity fruitJpaEntity = FruitMapper.toEntity(fruit);
-        fruitJpaEntity = jpaSpringDataRepository.save(fruitJpaEntity);
+        if (fruit.getId() == null) {
+            FruitJpaEntity fruitJpaEntity = FruitMapper.toEntity(fruit);
+            fruitJpaEntity = jpaSpringDataRepository.save(fruitJpaEntity);
+            return FruitMapper.toDomain(fruitJpaEntity);
+        }
+        FruitJpaEntity fruitJpaEntity =  jpaSpringDataRepository.findById(String.valueOf(fruit.getId()))
+                .map(entity -> {
+                    entity.updateFruit(
+                            fruit.getName().name(),
+                            fruit.getWeight().amount()
+                    );
+                    return jpaSpringDataRepository.save(entity);
+                }).orElseGet(() -> jpaSpringDataRepository.save(FruitMapper.toEntity(fruit)));
         return FruitMapper.toDomain(fruitJpaEntity);
     }
 
     @Override
     public List<Fruit> getAllFruits() {
-        List<FruitJpaEntity> allFruits = jpaSpringDataRepository.findAll();
-        return allFruits.stream().map(FruitMapper::toDomain).toList();
+        List<FruitJpaEntity> allFruitsJpaEntities = jpaSpringDataRepository.findAll();
+        return allFruitsJpaEntities.stream().map(FruitMapper::toDomain).toList();
     }
 
     @Override
     public Optional<Fruit> getFruitById(Long id){
-        Optional<FruitJpaEntity> fruit = jpaSpringDataRepository.findById(String.valueOf(id));
-        return fruit.map(FruitMapper::toDomain);
+        Optional<FruitJpaEntity> fruitJpaEntity = jpaSpringDataRepository.findById(String.valueOf(id));
+        return fruitJpaEntity.map(FruitMapper::toDomain);
     }
 }
