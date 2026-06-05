@@ -3,6 +3,7 @@ package cat.itacademy.s04.s02.n01.fruit.controller;
 import cat.itacademy.s04.s02.n01.fruit.application.service.CreateFruitService;
 import cat.itacademy.s04.s02.n01.fruit.application.service.GetAllFruitsService;
 import cat.itacademy.s04.s02.n01.fruit.application.service.GetFruitByIdService;
+import cat.itacademy.s04.s02.n01.fruit.application.usecases.UpdateFruitByIdUseCase;
 import cat.itacademy.s04.s02.n01.fruit.controller.exception.FruitNotFoundException;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.FruitName;
@@ -22,12 +23,15 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import tools.jackson.databind.ObjectMapper;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -58,6 +62,9 @@ class FruitRestControllerTest {
     @MockitoBean
     private GetFruitByIdService getFruitByIdUseCase;
 
+    @MockitoBean
+    private UpdateFruitByIdUseCase updateFruitByIdUseCase;
+
     @BeforeEach
     void setUp() {
         objectMapper = new ObjectMapper();
@@ -86,7 +93,26 @@ class FruitRestControllerTest {
         @DisplayName("returns 400 Bad Request when input data is invalid (name is blank)")
         void createFruit_returns400ValidationErrorInInputDataBlankName() throws Exception {
             String jsonInput =
-                    "{\"name\": \"\", \"weightAmount\" : 0.5, \"magnitude\": \"POUNDS\"}";
+                    "{\"name\": \"     \", \"weightAmount\" : 0.5, \"magnitude\": \"POUNDS\"}";
+
+
+            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post(API_URL_STRING)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(jsonInput));
+
+            result.andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.title", Matchers.containsString("Invalid Request Input Data")))
+                    .andExpect(jsonPath("$.detail", Matchers.containsString("Name")))
+                    .andExpect(jsonPath("$.detail", Matchers.containsString("blank")));
+
+            verifyNoInteractions(createFruitUseCase);
+        }
+
+        @Test
+        @DisplayName("returns 400 Bad Request when input data is invalid (name length is < 2)")
+        void createFruit_returns400ValidationErrorNameLengthIsLessThan2() throws Exception {
+            String jsonInput =
+                    "{\"name\": \"a\", \"weightAmount\" : 0.5, \"magnitude\": \"POUNDS\"}";
 
 
             ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post(API_URL_STRING)
@@ -95,7 +121,7 @@ class FruitRestControllerTest {
 
             result.andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.title", Matchers.containsString("Validation Error")))
-                    .andExpect(jsonPath("$.errors.name", Matchers.containsString("blank")));
+                    .andExpect(jsonPath("$.errors.name", Matchers.containsString("2")));
 
             verifyNoInteractions(createFruitUseCase);
         }
@@ -176,12 +202,13 @@ class FruitRestControllerTest {
         @Nested
         @DisplayName("GET /api/fruits/{id}")
         class GetFruitById {
+            String API_URL_STRING_ID = API_URL_STRING + "/{id}";
 
             @Test
             void getFruitById_returns200WithFruitData() throws Exception {
                 when(getFruitByIdUseCase.execute(FRUIT.getId())).thenReturn(FRUIT);
 
-                ResultActions result = mockMvc.perform(get(API_URL_STRING + "/{id}", FRUIT.getId())
+                ResultActions result = mockMvc.perform(get(API_URL_STRING_ID, FRUIT.getId())
                         .contentType(MediaType.APPLICATION_JSON));
 
                 result.andExpect(status().isOk())
@@ -196,7 +223,7 @@ class FruitRestControllerTest {
             void getFruitById_returns404FruitNotFoundWithExceptionDetails() throws Exception {
                 String exceptionMessage = "There are no fruits registered with the id";
                 when(getFruitByIdUseCase.execute(FRUIT.getId())).thenThrow(new FruitNotFoundException(exceptionMessage + FRUIT.getId()));
-                ResultActions result = mockMvc.perform(get(API_URL_STRING + "/{id}", FRUIT.getId())
+                ResultActions result = mockMvc.perform(get(API_URL_STRING_ID, FRUIT.getId())
                         .contentType(MediaType.APPLICATION_JSON));
 
                 result.andExpect(status().isNotFound())
@@ -209,7 +236,7 @@ class FruitRestControllerTest {
 
             @Test
             void getFruitById_returns400BadRequestWhenIdIsNegative() throws Exception {
-                ResultActions result = mockMvc.perform(get(API_URL_STRING + "/{id}", -1)
+                ResultActions result = mockMvc.perform(get(API_URL_STRING_ID, -1)
                         .contentType(MediaType.APPLICATION_JSON));
 
                 result.andExpect(status().isBadRequest())
@@ -217,6 +244,207 @@ class FruitRestControllerTest {
                         .andExpect(jsonPath("$.errors").exists());
 
                 verifyNoInteractions(getFruitByIdUseCase);
+            }
+        }
+
+        @Nested
+        @DisplayName("PATCH /api/fruits/{id}")
+        class UpdateFruitById {
+            private static final String API_URL_STRING_ID = API_URL_STRING + "/{id}";
+            private static final long ID = 1L;
+
+            @Test
+            @DisplayName("returns 200 OK with updated fruit data when input is valid")
+            void updateFruitById_withValidData_returns201WithUpdatedFruitData() throws Exception {
+
+                UpdateFruitRequestDTO updateFruitRequestDTO = new UpdateFruitRequestDTO(NAME_OF_FRUIT, WEIGHT_AMOUNT, KG_MAGNITUDE);
+
+                when(updateFruitByIdUseCase.execute(ID, updateFruitRequestDTO)).thenReturn(FRUIT);
+
+                ResultActions result = mockMvc.perform(patch(API_URL_STRING_ID, ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateFruitRequestDTO)));
+
+                result.andExpect(status().isOk())
+                        .andExpect(jsonPath("$.id").value(ID))
+                        .andExpect(jsonPath("$.name").value(NAME_OF_FRUIT))
+                        .andExpect(jsonPath("$.weightInKg").value(WEIGHT_AMOUNT));
+
+                verify(updateFruitByIdUseCase).execute(ID, updateFruitRequestDTO);
+            }
+
+            @Test
+            @DisplayName("returns 200 OK with updated fruit data when Name is null and weightAmount and magnitude are " +
+                    "valid")
+            void updateFruitById_withNullName_returns200WithUpdatedFruitData() throws Exception {
+                UpdateFruitRequestDTO updateFruitRequestDTO = new UpdateFruitRequestDTO(null, WEIGHT_AMOUNT, KG_MAGNITUDE);
+
+
+                when(updateFruitByIdUseCase.execute(ID, updateFruitRequestDTO)).thenReturn(FRUIT);
+
+                ResultActions result = mockMvc.perform(patch(API_URL_STRING_ID, ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateFruitRequestDTO)));
+
+                result.andExpect(status().isOk())
+                        .andExpect(jsonPath("$.id").value(ID))
+                        .andExpect(jsonPath("$.name").value(NAME_OF_FRUIT))
+                        .andExpect(jsonPath("$.weightInKg").value(WEIGHT_AMOUNT));
+
+                verify(updateFruitByIdUseCase).execute(ID, updateFruitRequestDTO);
+
+            }
+
+            @Test
+            @DisplayName("returns 200 OK with updated fruit data when Name is valid and weightAmount and magnitude null")
+            void updateFruitById_withNullMagnitudeAndWeightAmount_returns200WithUpdatedFruitData() throws Exception {
+                UpdateFruitRequestDTO updateFruitRequestDTO = new UpdateFruitRequestDTO(NAME_OF_FRUIT, null, null);
+
+                when(updateFruitByIdUseCase.execute(ID, updateFruitRequestDTO)).thenReturn(FRUIT);
+
+                ResultActions result = mockMvc.perform(patch(API_URL_STRING_ID, ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateFruitRequestDTO)));
+
+                result.andExpect(status().isOk())
+                        .andExpect(jsonPath("$.id").value(ID))
+                        .andExpect(jsonPath("$.name").value(NAME_OF_FRUIT))
+                        .andExpect(jsonPath("$.weightInKg").value(WEIGHT_AMOUNT));
+
+                verify(updateFruitByIdUseCase).execute(ID, updateFruitRequestDTO);
+            }
+
+            @Test
+            @DisplayName("returns 400 Bad Request when input data is invalid (name is < 2 size)")
+            void updateFruitById_withNameSizeLessThan2_returns400ValidationError() throws Exception {
+                String invalidName = "a";
+                UpdateFruitRequestDTO updateFruitRequestDTO = new UpdateFruitRequestDTO(invalidName, WEIGHT_AMOUNT, KG_MAGNITUDE);
+
+                ResultActions result = mockMvc.perform(patch(API_URL_STRING_ID, ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateFruitRequestDTO)));
+
+                result.andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.title", Matchers.containsString("Validation Error")))
+                        .andExpect(jsonPath("$.errors.name", Matchers.containsString("2")));
+
+                verifyNoInteractions(updateFruitByIdUseCase);
+            }
+
+            @Test
+            @DisplayName("returns 400 Bad Request when input data is invalid (name is > 100 size)")
+            void updateFruitById_withNameSizeGreaterThan100_returns400ValidationError() throws Exception {
+                String invalidName = "a".repeat(101);
+                UpdateFruitRequestDTO updateFruitRequestDTO = new UpdateFruitRequestDTO(invalidName, WEIGHT_AMOUNT, KG_MAGNITUDE);
+
+                ResultActions result = mockMvc.perform(patch(API_URL_STRING_ID, ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateFruitRequestDTO)));
+
+                result.andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.title", Matchers.containsString("Validation Error")))
+                        .andExpect(jsonPath("$.errors.name", Matchers.containsString("100")));
+
+                verifyNoInteractions(updateFruitByIdUseCase);
+            }
+
+
+            @Test
+            @DisplayName("returns 400 Bad Request when input data is invalid (weightAmount is negative)")
+            void updateFruitById_whenWeightAmountIsNegative_returns400ValidationError() throws Exception {
+                UpdateFruitRequestDTO updateFruitRequestDTO = new UpdateFruitRequestDTO(NAME_OF_FRUIT, -1.0, KG_MAGNITUDE);
+
+                ResultActions result = mockMvc.perform(patch(API_URL_STRING_ID, ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateFruitRequestDTO)));
+
+                result.andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.title", Matchers.containsString("Validation Error")))
+                        .andExpect(jsonPath("$.errors.weightAmount", Matchers.containsString("negative")));
+
+                verifyNoInteractions(updateFruitByIdUseCase);
+            }
+
+
+            @Test
+            @DisplayName("returns 400 Bad Request when input data is invalid (invalid magnitude)")
+            void updateFruitById_whenMagnitudeIsInvalid_returns400ValidationError() throws Exception {
+                String jsonInput = """
+                        {
+                            "name": "Apple",
+                            "weightAmount": 1.0,
+                            "magnitude": "INVALID_MAGNITUDE"
+                        }
+                        """;
+
+                ResultActions result = mockMvc.perform(patch(API_URL_STRING_ID, ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInput));
+
+                result.andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.title", containsString("Invalid Request")))
+                        .andExpect(jsonPath("$.detail", containsString("Magnitude")))
+                        .andExpect(jsonPath("$.detail", containsString("not valid")));
+
+                verifyNoInteractions(updateFruitByIdUseCase);
+            }
+
+            @Test
+            @DisplayName("returns 400 Bad Request when input data is invalid (valid magnitude, invalid weightAmount)")
+            void updateFruitById_whenMagnitudeIsValidAndWeightAmountNull_returns400ValidationError() throws Exception {
+                Map<String, Object> body = new HashMap<>();
+                body.put("name", "Apple");
+                body.put("weightAmount", 1.5);
+                body.put("magnitude", null);
+
+                ResultActions result = mockMvc.perform(patch(API_URL_STRING_ID, ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)));
+
+                result.andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.title", containsString("Invalid Request")))
+                        .andExpect(jsonPath("$.detail", containsString("Magnitude")))
+                        .andExpect(jsonPath("$.detail", containsString("required")));
+
+                verifyNoInteractions(updateFruitByIdUseCase);
+            }
+
+            @Test
+            @DisplayName("returns 400 Bad Request when input data is invalid (valid magnitude, invalid weightAmount)")
+            void updateFruitById_whenWeightAmountIsValidAndMagnitudeIsInvalid_returns400ValidationError() throws Exception {
+                Map<String, Object> body = new HashMap<>();
+                body.put("name", "Apple");
+                body.put("weightAmount", null);
+                body.put("magnitude", "POUNDS");
+
+                ResultActions result = mockMvc.perform(patch(API_URL_STRING_ID, ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)));
+
+                result.andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.title", containsString("Invalid Request")))
+                        .andExpect(jsonPath("$.detail", containsString("Weight Amount")))
+                        .andExpect(jsonPath("$.detail", containsString("required")));
+
+                verifyNoInteractions(updateFruitByIdUseCase);
+            }
+
+            @Test
+            @DisplayName("returns 404 Not Found when the service throws a FruitNotFoundException")
+            void updateFruitById_returns404WhenFruitNotFoundExceptionIsThrown() throws Exception {
+                UpdateFruitRequestDTO updateFruitRequestDTO = new UpdateFruitRequestDTO(NAME_OF_FRUIT, WEIGHT_AMOUNT, KG_MAGNITUDE);
+                String exceptionMessage = "There are no registered fruits.";
+
+                when(updateFruitByIdUseCase.execute(ID, updateFruitRequestDTO)).thenThrow(new FruitNotFoundException(exceptionMessage));
+
+                ResultActions result = mockMvc.perform(MockMvcRequestBuilders.patch(API_URL_STRING_ID, ID)
+                        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateFruitRequestDTO)));
+
+                result.andExpect(status().isNotFound())
+                        .andExpect(jsonPath("$.title", Matchers.containsString("Fruit Not Found")))
+                        .andExpect(jsonPath("$.detail", Matchers.containsString(exceptionMessage)));
+
+                verify(updateFruitByIdUseCase).execute(ID, updateFruitRequestDTO);
             }
         }
     }

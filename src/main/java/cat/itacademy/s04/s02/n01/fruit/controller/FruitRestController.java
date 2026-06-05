@@ -3,10 +3,9 @@ package cat.itacademy.s04.s02.n01.fruit.controller;
 import cat.itacademy.s04.s02.n01.fruit.application.usecases.CreateFruitUseCase;
 import cat.itacademy.s04.s02.n01.fruit.application.usecases.GetAllFruitsUseCase;
 import cat.itacademy.s04.s02.n01.fruit.application.usecases.GetFruitByIdUseCase;
+import cat.itacademy.s04.s02.n01.fruit.application.usecases.UpdateFruitByIdUseCase;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -27,6 +25,7 @@ public class FruitRestController {
     private final CreateFruitUseCase createFruitUseCase;
     private final GetAllFruitsUseCase getAllFruitsUseCase;
     private final GetFruitByIdUseCase getFruitByIdUseCase;
+    private final UpdateFruitByIdUseCase updateFruitByIdUseCase;
 
     @PostMapping
     public ResponseEntity<FruitResponseDTO> createFruit(@Valid @RequestBody CreateFruitRequestDTO request){
@@ -50,6 +49,13 @@ public class FruitRestController {
     @GetMapping("/{id}")
     public ResponseEntity<FruitResponseDTO> getFruitById(@PathVariable @Positive(message = "The ID must be a positive number") Long id){
         Fruit fruit = getFruitByIdUseCase.execute(id);
+        FruitResponseDTO fruitResponseDTO = FruitResponseDTO.from(fruit);
+        return ResponseEntity.ok(fruitResponseDTO);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<FruitResponseDTO> updateFruitById(@PathVariable @Positive(message = "The ID must be a positive number") Long id, @Valid @RequestBody UpdateFruitRequestDTO updateFruitRequestDTO){
+        Fruit fruit = updateFruitByIdUseCase.execute(id, updateFruitRequestDTO);
         FruitResponseDTO fruitResponseDTO = FruitResponseDTO.from(fruit);
         return ResponseEntity.ok(fruitResponseDTO);
     }
