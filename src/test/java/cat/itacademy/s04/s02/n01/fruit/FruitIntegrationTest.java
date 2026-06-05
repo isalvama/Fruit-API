@@ -1,6 +1,7 @@
 package cat.itacademy.s04.s02.n01.fruit;
 import cat.itacademy.s04.s02.n01.fruit.application.repository.FruitRepository;
 import cat.itacademy.s04.s02.n01.fruit.controller.CreateFruitRequestDTO;
+import cat.itacademy.s04.s02.n01.fruit.controller.UpdateFruitRequestDTO;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.FruitName;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Weight;
@@ -49,10 +50,10 @@ class FruitIntegrationTest {
     }
 
     @Nested
-    @DisplayName("PUT /api/users")
+    @DisplayName("PUT /api/fruits")
     class CreateFruit {
         @Test
-        void createFruitInKg_returns201WithLocationAndBodyFruitWithId() throws Exception {
+        void createFruit_returns201WithLocationAndBodyFruitWithId() throws Exception {
             CreateFruitRequestDTO createFruitDTO = new CreateFruitRequestDTO(NAME, WEIGHT, MAGNITUDE);
 
             ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post(API_URL)
@@ -67,7 +68,7 @@ class FruitIntegrationTest {
     }
 
     @Nested
-    @DisplayName("GET /api/users")
+    @DisplayName("GET /api/fruits")
     class GetFruits {
         @Test
         void getFruits_returns200WithListOfRegisteredFruitData() throws Exception {
@@ -102,8 +103,10 @@ class FruitIntegrationTest {
         }
 
         @Nested
-        @DisplayName("GET /api/users/{id}")
+        @DisplayName("GET /api/fruits/{id}")
         class GetFruitById {
+
+        }
             @Test
             void getFruitById_returns200WithFruitData() throws Exception {
                 String fruitName = "Kiwi";
@@ -144,5 +147,47 @@ class FruitIntegrationTest {
                         .andExpect(jsonPath("$.detail", Matchers.containsString(id.toString())));
             }
         }
-    }
+
+        @Nested
+        @DisplayName("PATCH /api/fruits/{id}")
+        class UpdateFruitById {
+
+            UpdateFruitRequestDTO UPDATE_FRUIT_REQUEST_DTO = new UpdateFruitRequestDTO(NAME, WEIGHT, MAGNITUDE);
+
+
+            private static final String UPDATE_USER_BY_ID_URL = "/api/fruits/{id}";
+            @Test
+            void updateFruitById_returns200WithFruitDataUpdated() throws Exception {
+                String fruitName = "Kiwi";
+                double fruitWeightAmount = 0.3;
+                Fruit fruit = Fruit.create(FruitName.of(fruitName), Weight.inKiloGrams(fruitWeightAmount));
+                fruitRepository.saveFruit(FRUIT);
+                fruitRepository.saveFruit(fruit);
+                String newName = "Pear";
+                double newWeight = 2.45;
+                UpdateFruitRequestDTO updateFruitRequestDTO = new UpdateFruitRequestDTO(newName, newWeight, MAGNITUDE);
+
+                ResultActions result = mockMvc.perform(MockMvcRequestBuilders.patch(UPDATE_USER_BY_ID_URL, 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateFruitRequestDTO)));
+                result.andExpect(status().isOk())
+                        .andExpect(jsonPath("$.id").value(1L))
+                        .andExpect(jsonPath("$.name").value(newName))
+                        .andExpect(jsonPath("$.weightInKg").value(newWeight));
+            }
+
+            @Test
+            @DisplayName("returns 404 Not Found when there are no registered fruits")
+            void updateFruitById_returns404NotFound() throws Exception {
+
+                ResultActions result = mockMvc.perform(MockMvcRequestBuilders.patch(UPDATE_USER_BY_ID_URL, 901L)
+                        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(UPDATE_FRUIT_REQUEST_DTO)));
+
+                result.andExpect(status().isNotFound())
+                        .andExpect(jsonPath("$.title", Matchers.containsString("Fruit Not Found")))
+                        .andExpect(jsonPath("$.detail", Matchers.containsString("registered")))
+                        .andExpect(jsonPath("$.detail", Matchers.containsString("no")));
+
+            }
+        }
 }

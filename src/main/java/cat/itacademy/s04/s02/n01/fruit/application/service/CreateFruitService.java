@@ -16,7 +16,7 @@ public class CreateFruitService implements CreateFruitUseCase {
 
     @Override
     public Fruit createFruit(String name, double weightAmount, String magnitude) {
-        Weight weight = Weight.toDomainWeight(weightAmount, Magnitude.fromString(magnitude.toUpperCase()));
+        Weight weight = Weight.toDomainWeight(weightAmount, Magnitude.fromString(magnitude));
         Fruit fruit = Fruit.create(FruitName.of(name), weight.convertToKgWeight());
         return h2FruitRepository.saveFruit(fruit);
     }
