@@ -4,15 +4,19 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
 @Entity
 @Table (name = "fruit")
 public class FruitJpaEntity {
     @Id
     @GeneratedValue
+    @Getter
     private Long id;
+    @Getter
     private String name;
-    private double weightInKg;
+    @Getter
+    private Double weightInKg;
 
     public FruitJpaEntity(Long id, String name, double weightInKg) {
         this.id = id;
@@ -20,15 +24,10 @@ public class FruitJpaEntity {
         this.weightInKg = weightInKg;
     }
 
-    public Long getId() {
-        return id;
+    public void updateFruit(String name, Double weightInKg){
+        this.name = name;
+        this.weightInKg = weightInKg;
     }
 
-    public String getName() {
-        return name;
-    }
 
-    public double getWeightInKg() {
-        return weightInKg;
-    }
 }
