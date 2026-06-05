@@ -1,13 +1,16 @@
 package cat.itacademy.s04.s02.n01.fruit.domain.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 public class Fruit {
     @Getter
     private final Long id;
     @Getter
-    private final FruitName name;
-    private final Weight weightInKg;
+    @Setter
+    private FruitName name;
+    @Setter
+    private Weight weightInKg;
 
     public Fruit(Long id, FruitName name, Weight weightInKg) {
         this.id = id;
