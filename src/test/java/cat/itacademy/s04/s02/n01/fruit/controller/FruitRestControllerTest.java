@@ -3,6 +3,7 @@ package cat.itacademy.s04.s02.n01.fruit.controller;
 import cat.itacademy.s04.s02.n01.fruit.application.service.CreateFruitService;
 import cat.itacademy.s04.s02.n01.fruit.application.service.GetAllFruitsService;
 import cat.itacademy.s04.s02.n01.fruit.application.service.GetFruitByIdService;
+import cat.itacademy.s04.s02.n01.fruit.application.usecases.DeleteFruitByIdUseCase;
 import cat.itacademy.s04.s02.n01.fruit.application.usecases.UpdateFruitByIdUseCase;
 import cat.itacademy.s04.s02.n01.fruit.controller.exception.FruitNotFoundException;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
@@ -30,8 +31,7 @@ import java.util.Map;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -64,6 +64,9 @@ class FruitRestControllerTest {
 
     @MockitoBean
     private UpdateFruitByIdUseCase updateFruitByIdUseCase;
+
+    @MockitoBean
+    private DeleteFruitByIdUseCase deleteFruitByIdUseCase;
 
     @BeforeEach
     void setUp() {
@@ -445,6 +448,52 @@ class FruitRestControllerTest {
                         .andExpect(jsonPath("$.detail", Matchers.containsString(exceptionMessage)));
 
                 verify(updateFruitByIdUseCase).execute(ID, updateFruitRequestDTO);
+            }
+
+            @Nested
+            @DisplayName("DELETE /api/fruits/{id}")
+            class DeleteFruitById {
+                String API_URL_STRING_ID = API_URL_STRING + "/{id}";
+
+                @Test
+                void getFruitById_returns204() throws Exception {
+                    ResultActions result = mockMvc.perform(delete(API_URL_STRING_ID, FRUIT.getId())
+                            .contentType(MediaType.APPLICATION_JSON));
+
+                    result.andExpect(status().isNoContent());
+
+                    verify(deleteFruitByIdUseCase).execute(FRUIT.getId());
+                }
+
+                @Test
+                @DisplayName("returns 400 Bad Request when input data is invalid (id is negative)")
+                void getFruitById_returns400BadRequestIdIsNegative() throws Exception {
+                    ResultActions result = mockMvc.perform(delete(API_URL_STRING_ID, -1L)
+                            .contentType(MediaType.APPLICATION_JSON));
+
+                    result.andExpect(status().isBadRequest())
+                            .andExpect(jsonPath("$.title", Matchers.containsString("Validation Error in Parameter")))
+                            .andExpect(jsonPath("$.errors['deleteFruitById.id']", Matchers.containsString("ID")))
+                            .andExpect(jsonPath("$.errors['deleteFruitById.id']", Matchers.containsString("positive")));
+
+                    verifyNoInteractions(deleteFruitByIdUseCase);
+                }
+
+                @Test
+                @DisplayName("returns 404 Not Found when the service throws a FruitNotFoundException")
+                void deleteFruitById_returns404WhenFruitNotFoundExceptionIsThrown() throws Exception {
+                    final String exceptionMessage = "There are no fruits registered with the id " + ID;
+                    doThrow(new FruitNotFoundException(exceptionMessage)).when(deleteFruitByIdUseCase).execute(anyLong());
+
+                    ResultActions result = mockMvc.perform(delete(API_URL_STRING_ID, ID)
+                            .contentType(MediaType.APPLICATION_JSON));
+
+                    result.andExpect(status().isNotFound())
+                            .andExpect(jsonPath("$.title", Matchers.containsString("Fruit Not Found")))
+                            .andExpect(jsonPath("$.detail", Matchers.containsString(exceptionMessage)));
+
+                    verify(deleteFruitByIdUseCase).execute(anyLong());
+                }
             }
         }
     }

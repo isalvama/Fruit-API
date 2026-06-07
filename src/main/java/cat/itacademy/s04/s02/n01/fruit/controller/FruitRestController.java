@@ -1,9 +1,6 @@
 package cat.itacademy.s04.s02.n01.fruit.controller;
 
-import cat.itacademy.s04.s02.n01.fruit.application.usecases.CreateFruitUseCase;
-import cat.itacademy.s04.s02.n01.fruit.application.usecases.GetAllFruitsUseCase;
-import cat.itacademy.s04.s02.n01.fruit.application.usecases.GetFruitByIdUseCase;
-import cat.itacademy.s04.s02.n01.fruit.application.usecases.UpdateFruitByIdUseCase;
+import cat.itacademy.s04.s02.n01.fruit.application.usecases.*;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -26,6 +23,7 @@ public class FruitRestController {
     private final GetAllFruitsUseCase getAllFruitsUseCase;
     private final GetFruitByIdUseCase getFruitByIdUseCase;
     private final UpdateFruitByIdUseCase updateFruitByIdUseCase;
+    private final DeleteFruitByIdUseCase deleteFruitByIdUseCase;
 
     @PostMapping
     public ResponseEntity<FruitResponseDTO> createFruit(@Valid @RequestBody CreateFruitRequestDTO request){
@@ -58,5 +56,11 @@ public class FruitRestController {
         Fruit fruit = updateFruitByIdUseCase.execute(id, updateFruitRequestDTO);
         FruitResponseDTO fruitResponseDTO = FruitResponseDTO.from(fruit);
         return ResponseEntity.ok(fruitResponseDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<FruitResponseDTO> deleteFruitById(@PathVariable @Positive(message = "The ID must be a positive number") Long id){
+        deleteFruitByIdUseCase.execute(id);
+        return ResponseEntity.noContent().build();
     }
 }
