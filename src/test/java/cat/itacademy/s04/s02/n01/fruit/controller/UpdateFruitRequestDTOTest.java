@@ -27,5 +27,4 @@ class UpdateFruitRequestDTOTest {
         assertThrows(InvalidRequestException.class, () -> {new UpdateFruitRequestDTO("Apple", 1.0, "");});
         assertThrows(InvalidRequestException.class, () -> {new UpdateFruitRequestDTO("Apple", 1.0, "INVALID_MAGNITUDE");});
     }
-
 }
