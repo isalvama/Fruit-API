@@ -2,9 +2,7 @@ package cat.itacademy.s04.s02.n01.fruit.application.repository;
 
 import cat.itacademy.s04.s02.n01.fruit.application.repository.entity.FruitJpaEntity;
 import cat.itacademy.s04.s02.n01.fruit.application.repository.entity.FruitMapper;
-import cat.itacademy.s04.s02.n01.fruit.controller.exception.FruitNotFoundException;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
-import cat.itacademy.s04.s02.n01.fruit.domain.model.Weight;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -46,4 +44,10 @@ public class H2FruitRepositoryImpl implements FruitRepository{
         Optional<FruitJpaEntity> fruitJpaEntity = jpaSpringDataRepository.findById(String.valueOf(id));
         return fruitJpaEntity.map(FruitMapper::toDomain);
     }
+
+    @Override
+    public void deleteFruitById(Long id){
+        jpaSpringDataRepository.deleteById(String.valueOf(id));
+    }
+
 }

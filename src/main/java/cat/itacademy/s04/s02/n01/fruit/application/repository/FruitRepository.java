@@ -12,4 +12,7 @@ public interface FruitRepository {
     List<Fruit> getAllFruits();
 
     Optional<Fruit> getFruitById(Long id);
+
+    void deleteFruitById(Long id);
+
 }
