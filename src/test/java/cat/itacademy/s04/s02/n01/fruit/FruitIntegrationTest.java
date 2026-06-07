@@ -7,10 +7,7 @@ import cat.itacademy.s04.s02.n01.fruit.domain.model.FruitName;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Weight;
 import jakarta.transaction.Transactional;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -190,4 +187,39 @@ class FruitIntegrationTest {
 
             }
         }
+
+    @Nested
+    @DisplayName("GET /api/fruits/{id}")
+    class DeleteFruitById {
+        private final String fruitName = "Kiwi";
+        private final double fruitWeightAmount = 0.3;
+        private final Fruit fruit = Fruit.create(FruitName.of(fruitName), Weight.inKiloGrams(fruitWeightAmount));
+
+
+        @BeforeEach
+        void setUp(){
+            fruitRepository.saveFruit(FRUIT);
+            fruitRepository.saveFruit(fruit);
+        }
+        @Test
+        void deleteFruitById_returns204() throws Exception {
+
+            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete(API_URL + "/{id}", 1L)
+                    .contentType(MediaType.APPLICATION_JSON));
+
+            result.andExpect(status().isNoContent());
+        }
+
+        @Test
+        void deleteFruitById_returns404NotFound() throws Exception {
+
+            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete(API_URL + "/{id}", 909L)
+                    .contentType(MediaType.APPLICATION_JSON));
+
+            result.andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.title", Matchers.containsString("Fruit Not Found")))
+                    .andExpect(jsonPath("$.detail", Matchers.containsString("registered")))
+                    .andExpect(jsonPath("$.detail", Matchers.containsString("no")));
+        }
+    }
 }
