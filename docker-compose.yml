@@ -1,0 +1,75 @@
+services:
+  # --- PRODUCTION DB ---
+  db-prod:
+    image: mysql:8.0
+    container_name: mysql-prod
+    environment:
+      MYSQL_ROOT_PASSWORD: ${PROD_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${PROD_MYSQL_DATABASE}
+      MYSQL_USER: ${PROD_MYSQL_USER}
+      MYSQL_PASSWORD: ${PROD_MYSQL_PASSWORD}
+    ports:
+      - "${PROD_MYSQL_PORT}:3306"
+    volumes:
+      - prod-data:/var/lib/mysql
+    networks:
+      - agenda-network
+
+  # --- TEST DB ---
+  db-test:
+    image: mysql:8.0
+    container_name: mysql-test
+    environment:
+      MYSQL_ROOT_PASSWORD: ${TEST_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${TEST_MYSQL_DATABASE}
+      MYSQL_USER: ${TEST_MYSQL_USER}
+      MYSQL_PASSWORD: ${TEST_MYSQL_PASSWORD}
+    ports:
+      - "${TEST_MYSQL_PORT}:3306"
+    volumes:
+      - test-data:/var/lib/mysql
+    networks:
+      - agenda-network
+
+  # --- ADMINER (to visualize both db) ---
+  adminer:
+    image: adminer:4
+    container_name: adminer-tool
+    ports:
+      - "8888:8080"
+    networks:
+      - agenda-network
+    links:
+      - db-prod:mysql-prod  # Esto fuerza el enlace interno
+    depends_on:
+      - db-prod
+
+  java-app:
+    build:
+      context: .
+      #  Root directory where the Dockerfile is located
+      dockerfile: Dockerfile
+    container_name: java-app
+    restart: "no"
+    stdin_open: true
+    tty: true                               # Assign a pseudo-terminal for the CLI
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+    networks:
+      - agenda-network
+    depends_on:
+      db-prod:
+        condition: service_healthy
+    profiles: ["interactive"]
+
+volumes:
+  prod-data:
+  test-data:
+
+networks:
+  agenda-network:
+    driver: bridge
