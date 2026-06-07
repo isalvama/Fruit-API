@@ -3,7 +3,7 @@ package cat.itacademy.s04.s02.n01.fruit.application.service;
 import cat.itacademy.s04.s02.n01.fruit.application.repository.FruitRepository;
 import cat.itacademy.s04.s02.n01.fruit.application.usecases.CreateFruitUseCase;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
-import cat.itacademy.s04.s02.n01.fruit.domain.model.FruitName;
+import cat.itacademy.s04.s02.n01.common.domain.value_object.Name;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Magnitude;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Weight;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class CreateFruitService implements CreateFruitUseCase {
     @Override
     public Fruit createFruit(String name, double weightAmount, String magnitude) {
         Weight weight = Weight.toDomainWeight(weightAmount, Magnitude.fromString(magnitude));
-        Fruit fruit = Fruit.create(FruitName.of(name), weight.convertToKgWeight());
+        Fruit fruit = Fruit.create(Name.of(name), weight.convertToKgWeight());
         return h2FruitRepository.saveFruit(fruit);
     }
 }

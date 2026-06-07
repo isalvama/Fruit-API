@@ -5,7 +5,7 @@ import cat.itacademy.s04.s02.n01.fruit.application.repository.H2FruitRepositoryI
 import cat.itacademy.s04.s02.n01.fruit.application.usecases.GetAllFruitsUseCase;
 import cat.itacademy.s04.s02.n01.fruit.controller.exception.FruitNotFoundException;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
-import cat.itacademy.s04.s02.n01.fruit.domain.model.FruitName;
+import cat.itacademy.s04.s02.n01.common.domain.value_object.Name;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Weight;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ class GetAllFruitsServiceTest {
     private static final Double WEIGHT = 4.6;
     private static final String MAGNITUDE = "KILOGRAMS";
     private static final String API_URL = "/api/fruits";
-    private static final Fruit FRUIT = Fruit.create(FruitName.of(NAME), Weight.inKiloGrams(WEIGHT));
+    private static final Fruit FRUIT = Fruit.create(Name.of(NAME), Weight.inKiloGrams(WEIGHT));
     private FruitRepository fruitRepository;
     private GetAllFruitsUseCase getAllFruitsUseCase;
 
@@ -36,7 +36,7 @@ class GetAllFruitsServiceTest {
     void execute_shouldReturnAListOfFruits() {
         String fruit2Name = "Kiwi";
         double fruit2WeightAmount = 0.3;
-        Fruit fruit2 = Fruit.create(FruitName.of(fruit2Name), Weight.inKiloGrams(fruit2WeightAmount));
+        Fruit fruit2 = Fruit.create(Name.of(fruit2Name), Weight.inKiloGrams(fruit2WeightAmount));
         when(fruitRepository.getAllFruits()).thenReturn(List.of(FRUIT, fruit2));
 
         List<Fruit> fruits = getAllFruitsUseCase.execute();

@@ -1,5 +1,6 @@
 package cat.itacademy.s04.s02.n01.fruit.domain.model;
 
+import cat.itacademy.s04.s02.n01.common.domain.value_object.Name;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,17 +9,17 @@ public class Fruit {
     private final Long id;
     @Getter
     @Setter
-    private FruitName name;
+    private Name name;
     @Setter
     private Weight weightInKg;
 
-    public Fruit(Long id, FruitName name, Weight weightInKg) {
+    public Fruit(Long id, Name name, Weight weightInKg) {
         this.id = id;
         this.name = name;
         this.weightInKg = weightInKg;
     }
 
-    public static Fruit create (FruitName name, Weight weightInKg){
+    public static Fruit create (Name name, Weight weightInKg){
         return new Fruit(
                 null,
                 name,
