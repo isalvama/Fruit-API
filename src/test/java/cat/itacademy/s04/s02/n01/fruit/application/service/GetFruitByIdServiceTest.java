@@ -4,7 +4,7 @@ import cat.itacademy.s04.s02.n01.fruit.application.repository.FruitRepository;
 import cat.itacademy.s04.s02.n01.fruit.application.repository.H2FruitRepositoryImpl;
 import cat.itacademy.s04.s02.n01.fruit.controller.exception.FruitNotFoundException;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
-import cat.itacademy.s04.s02.n01.fruit.domain.model.FruitName;
+import cat.itacademy.s04.s02.n01.common.domain.value_object.Name;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Weight;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ class GetFruitByIdServiceTest {
     private static final String POUNDS_MAGNITUDE = "POUNDS";
     private static final Long ID = 1L;
     private static final String API_URL_STRING = "/api/fruits";
-    private static final Fruit FRUIT = new Fruit(1L, FruitName.of(NAME_OF_FRUIT), Weight.inKiloGrams(WEIGHT_AMOUNT));
+    private static final Fruit FRUIT = new Fruit(1L, Name.of(NAME_OF_FRUIT), Weight.inKiloGrams(WEIGHT_AMOUNT));
     private FruitRepository fruitRepository;
     private GetFruitByIdService getFruitByIdService;
 

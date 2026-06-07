@@ -5,7 +5,7 @@ import cat.itacademy.s04.s02.n01.fruit.application.usecases.UpdateFruitByIdUseCa
 import cat.itacademy.s04.s02.n01.fruit.controller.UpdateFruitRequestDTO;
 import cat.itacademy.s04.s02.n01.fruit.controller.exception.FruitNotFoundException;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
-import cat.itacademy.s04.s02.n01.fruit.domain.model.FruitName;
+import cat.itacademy.s04.s02.n01.common.domain.value_object.Name;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Magnitude;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Weight;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class UpdateFruitByIdService implements UpdateFruitByIdUseCase {
         Optional.ofNullable(updateFruitRequestDTO.name())
                 .ifPresent(name -> {
                     if (!name.isBlank()) {
-                        fruit.setName(new FruitName(name));
+                        fruit.setName(new Name(name));
                     } else {
                      fruit.setName(fruit.getName());
                     }

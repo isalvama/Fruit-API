@@ -3,7 +3,7 @@ import cat.itacademy.s04.s02.n01.fruit.application.repository.FruitRepository;
 import cat.itacademy.s04.s02.n01.fruit.controller.CreateFruitRequestDTO;
 import cat.itacademy.s04.s02.n01.fruit.controller.UpdateFruitRequestDTO;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
-import cat.itacademy.s04.s02.n01.fruit.domain.model.FruitName;
+import cat.itacademy.s04.s02.n01.common.domain.value_object.Name;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Weight;
 import jakarta.transaction.Transactional;
 import org.hamcrest.Matchers;
@@ -30,7 +30,7 @@ class FruitIntegrationTest {
     private static final Double WEIGHT = 4.6;
     private static final String MAGNITUDE = "KILOGRAMS";
     private static final String API_URL = "/api/fruits";
-    private static final Fruit FRUIT = Fruit.create(FruitName.of(NAME), Weight.inKiloGrams(WEIGHT));
+    private static final Fruit FRUIT = Fruit.create(Name.of(NAME), Weight.inKiloGrams(WEIGHT));
 
     @Autowired
     private FruitRepository fruitRepository;
@@ -71,7 +71,7 @@ class FruitIntegrationTest {
         void getFruits_returns200WithListOfRegisteredFruitData() throws Exception {
             String fruit2Name = "Kiwi";
             double fruit2WeightAmount = 0.3;
-            Fruit fruit2 = Fruit.create(FruitName.of(fruit2Name), Weight.inKiloGrams(fruit2WeightAmount));
+            Fruit fruit2 = Fruit.create(Name.of(fruit2Name), Weight.inKiloGrams(fruit2WeightAmount));
             fruitRepository.saveFruit(FRUIT);
             fruitRepository.saveFruit(fruit2);
             ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(API_URL)
@@ -108,7 +108,7 @@ class FruitIntegrationTest {
             void getFruitById_returns200WithFruitData() throws Exception {
                 String fruitName = "Kiwi";
                 double fruitWeightAmount = 0.3;
-                Fruit fruit = Fruit.create(FruitName.of(fruitName), Weight.inKiloGrams(fruitWeightAmount));
+                Fruit fruit = Fruit.create(Name.of(fruitName), Weight.inKiloGrams(fruitWeightAmount));
                 fruitRepository.saveFruit(FRUIT);
                 fruitRepository.saveFruit(fruit);
                 ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(API_URL + "/{id}", 1L)
@@ -157,7 +157,7 @@ class FruitIntegrationTest {
             void updateFruitById_returns200WithFruitDataUpdated() throws Exception {
                 String fruitName = "Kiwi";
                 double fruitWeightAmount = 0.3;
-                Fruit fruit = Fruit.create(FruitName.of(fruitName), Weight.inKiloGrams(fruitWeightAmount));
+                Fruit fruit = Fruit.create(Name.of(fruitName), Weight.inKiloGrams(fruitWeightAmount));
                 fruitRepository.saveFruit(FRUIT);
                 fruitRepository.saveFruit(fruit);
                 String newName = "Pear";
@@ -193,7 +193,7 @@ class FruitIntegrationTest {
     class DeleteFruitById {
         private final String fruitName = "Kiwi";
         private final double fruitWeightAmount = 0.3;
-        private final Fruit fruit = Fruit.create(FruitName.of(fruitName), Weight.inKiloGrams(fruitWeightAmount));
+        private final Fruit fruit = Fruit.create(Name.of(fruitName), Weight.inKiloGrams(fruitWeightAmount));
 
 
         @BeforeEach

@@ -1,14 +1,12 @@
 package cat.itacademy.s04.s02.n01.fruit.application.repository.entity;
 
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
-import cat.itacademy.s04.s02.n01.fruit.domain.model.FruitName;
+import cat.itacademy.s04.s02.n01.common.domain.value_object.Name;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Magnitude;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Weight;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,7 +22,7 @@ class FruitMapperTest {
     public class ToDomain{
         @Test
         void toDomainModel() {
-            Fruit fruit = new Fruit(null, FruitName.of(FRUIT_NAME), Weight.inKiloGrams(WEIGHT));
+            Fruit fruit = new Fruit(null, Name.of(FRUIT_NAME), Weight.inKiloGrams(WEIGHT));
 
             FruitJpaEntity fruitJpaEntity = FruitMapper.toEntity(fruit);
             assertNull(fruitJpaEntity.getId());
