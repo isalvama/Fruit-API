@@ -7,26 +7,20 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table (name = "fruit")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class FruitJpaEntity {
     @Id
     @GeneratedValue
-    @Getter
     private Long id;
-    @Getter
     private String name;
-    @Getter
     private Double weightInKg;
-
-    public FruitJpaEntity(Long id, String name, double weightInKg) {
-        this.id = id;
-        this.name = name;
-        this.weightInKg = weightInKg;
-    }
 
     public void updateFruit(String name, Double weightInKg){
         this.name = name;
