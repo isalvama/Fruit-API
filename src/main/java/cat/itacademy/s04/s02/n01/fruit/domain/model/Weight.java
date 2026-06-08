@@ -6,7 +6,7 @@ public record Weight(double amount, Magnitude magnitude) {
 
     public Weight {
         if (magnitude == null) {throw new InvalidWeightException("Weight's magnitude can not be null");}
-        magnitude.validate(amount);
+        magnitude.validateMaxLimit(amount);
     }
 
     public Weight convertToKgWeight(){

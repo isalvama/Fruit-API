@@ -1,9 +1,9 @@
 package cat.itacademy.s04.s02.n01.fruit.application.repository.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import cat.itacademy.s04.s02.n01.provider.application.repository.entity.ProviderJPAEntity;
+import cat.itacademy.s04.s02.n01.provider.domain.model.Provider;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,10 +21,14 @@ public class FruitJpaEntity {
     private Long id;
     private String name;
     private Double weightInKg;
+    @ManyToOne
+    @JoinColumn(name = "provider_id", nullable = false)
+    private ProviderJPAEntity provider;
 
-    public void updateFruit(String name, Double weightInKg){
+    public void updateFruit(String name, Double weightInKg, ProviderJPAEntity provider){
         this.name = name;
         this.weightInKg = weightInKg;
+        this.provider = provider;
     }
 
 

@@ -19,29 +19,30 @@ import java.util.List;
 @Validated
 public class FruitRestController {
 
-    private final CreateFruitUseCase createFruitUseCase;
+    private final RegisterFruitUseCase registerFruitUseCase;
     private final GetAllFruitsUseCase getAllFruitsUseCase;
     private final GetFruitByIdUseCase getFruitByIdUseCase;
+    private final GetFruitsByProviderIdUseCase getFruitsByProviderIdUseCase;
     private final UpdateFruitByIdUseCase updateFruitByIdUseCase;
     private final DeleteFruitByIdUseCase deleteFruitByIdUseCase;
 
     @PostMapping
-    public ResponseEntity<FruitResponseDTO> createFruit(@Valid @RequestBody CreateFruitRequestDTO request){
-        Fruit fruit = createFruitUseCase.createFruit(request.name(), request.weightAmount(), request.magnitude());
-        FruitResponseDTO createFruitResponseDTO = FruitResponseDTO.from(fruit);
+    public ResponseEntity<FruitResponseDTO> registerFruit(@Valid @RequestBody RegisterFruitRequestDTO request){
+        Fruit fruit = registerFruitUseCase.registerFruit(request.name(), request.weightAmount(), request.magnitude(), request.providerId());
+        FruitResponseDTO fruitResponseDTO = FruitResponseDTO.from(fruit);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(fruit.getId())
                 .toUri();
-        return ResponseEntity.created(location).body(createFruitResponseDTO);
+        return ResponseEntity.created(location).body(fruitResponseDTO);
     }
 
     @GetMapping
     public ResponseEntity<List<FruitResponseDTO>> getFruits(){
         List<Fruit> fruits = getAllFruitsUseCase.execute();
-        List<FruitResponseDTO> createFruitResponseDTOs = FruitResponseDTO.from(fruits);
-        return ResponseEntity.ok().body(createFruitResponseDTOs);
+        List<FruitResponseDTO> fruitResponseDTOs = FruitResponseDTO.from(fruits);
+        return ResponseEntity.ok().body(fruitResponseDTOs);
     }
 
     @GetMapping("/{id}")
@@ -49,6 +50,13 @@ public class FruitRestController {
         Fruit fruit = getFruitByIdUseCase.execute(id);
         FruitResponseDTO fruitResponseDTO = FruitResponseDTO.from(fruit);
         return ResponseEntity.ok(fruitResponseDTO);
+    }
+
+    @GetMapping("/provider/{providerId}")
+    public ResponseEntity<List<FruitResponseDTO>> getFruitsByProviderId(@PathVariable @Positive(message = "The ID must be a positive number") Long providerId){
+        List<Fruit> fruits = getFruitsByProviderIdUseCase.execute(providerId);
+        List<FruitResponseDTO> fruitResponseDTOs = FruitResponseDTO.from(fruits);
+        return ResponseEntity.ok().body(fruitResponseDTOs);
     }
 
     @PatchMapping("/{id}")

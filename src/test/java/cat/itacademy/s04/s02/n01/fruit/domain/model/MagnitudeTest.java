@@ -14,14 +14,8 @@ class MagnitudeTest {
     class WeightValidation {
 
         @Test
-        void shouldThrowInvalidWeightExceptionWhenAmountIsNegativeOrZero() {
-            Exception exception = assertThrows(InvalidWeightException.class, () -> {Magnitude.KILOGRAMS.validate(-1);});
-            assertTrue(exception.getMessage().contains("negative"));
-        }
-
-        @Test
         void shouldThrowInvalidWeightExceptionWhenAmountKgIsGraterThanMaxLimit() {
-            Exception exception = assertThrows(InvalidWeightException.class, () -> {Magnitude.KILOGRAMS.validate(601);});
+            Exception exception = assertThrows(InvalidWeightException.class, () -> {Magnitude.KILOGRAMS.validateMaxLimit(601);});
             assertTrue(exception.getMessage().contains("greater than"));
             assertTrue(exception.getMessage().contains(Magnitude.KILOGRAMS.getSymbol()));
 
@@ -29,7 +23,7 @@ class MagnitudeTest {
 
         @Test
         void shouldThrowInvalidWeightExceptionWhenAmountPoundsIsGraterThanMaxLimit() {
-            Exception exception = assertThrows(InvalidWeightException.class, () -> {Magnitude.POUNDS.validate(1323);});
+            Exception exception = assertThrows(InvalidWeightException.class, () -> {Magnitude.POUNDS.validateMaxLimit(1323);});
             assertTrue(exception.getMessage().contains("greater than"));
             assertTrue(exception.getMessage().contains(Magnitude.POUNDS.getSymbol()));
 

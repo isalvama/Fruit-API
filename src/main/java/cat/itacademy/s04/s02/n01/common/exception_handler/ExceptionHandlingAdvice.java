@@ -2,6 +2,8 @@ package cat.itacademy.s04.s02.n01.common.exception_handler;
 
 import cat.itacademy.s04.s02.n01.fruit.controller.exception.FruitNotFoundException;
 import cat.itacademy.s04.s02.n01.fruit.controller.exception.InvalidRequestException;
+import cat.itacademy.s04.s02.n01.fruit.domain.exception.InvalidWeightException;
+import cat.itacademy.s04.s02.n01.provider.controller.exception.ProviderNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -29,6 +31,24 @@ import java.util.Map;
     public ProblemDetail handleFruitNotFoundException (FruitNotFoundException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
         problemDetail.setTitle("Fruit Not Found");
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
+    }
+
+    @ResponseBody
+    @ExceptionHandler(ProviderNotFoundException.class)
+    public ProblemDetail handleProviderNotFoundException (ProviderNotFoundException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        problemDetail.setTitle("Provider Not Found");
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
+    }
+
+    @ResponseBody
+    @ExceptionHandler(InvalidWeightException.class)
+    public ProblemDetail handleInvalidWeightException (InvalidWeightException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        problemDetail.setTitle("Invalid Weight");
         problemDetail.setDetail(ex.getMessage());
         return problemDetail;
     }

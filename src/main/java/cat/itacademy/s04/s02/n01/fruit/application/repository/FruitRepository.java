@@ -11,6 +11,8 @@ public interface FruitRepository {
 
     List<Fruit> getAllFruits();
 
+    List<Fruit> getFruitsByProviderId(Long id);
+
     Optional<Fruit> getFruitById(Long id);
 
     void deleteFruitById(Long id);

@@ -4,18 +4,24 @@ import cat.itacademy.s04.s02.n01.fruit.controller.exception.InvalidRequestExcept
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Magnitude;
 import jakarta.validation.constraints.*;
 
-public record CreateFruitRequestDTO(
+public record RegisterFruitRequestDTO(
         @NotNull
         @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
         String name,
+        @NotNull
         @Positive (message = "Weight Amount cannot be negative")
-        double weightAmount,
+        Double weightAmount,
         @NotBlank(message = "Magnitude cannot be null or blank")
-        String magnitude
+        String magnitude,
+        @NotNull (message = "providerId cannot be null")
+        @Positive (message = "providerId cannot be negative")
+        Long providerId
 ) {
-    public CreateFruitRequestDTO {
+    public RegisterFruitRequestDTO {
+        if (magnitude == null) throw new InvalidRequestException("Magnitude is required");
         validateMagnitude(magnitude);
         validateName(name);
+        validateAmount(weightAmount, magnitude);
     }
 
     private void validateMagnitude(String magnitude) {
@@ -23,6 +29,9 @@ public record CreateFruitRequestDTO(
         if (!isValid) {
             throw new InvalidRequestException("Magnitude is not valid");
         }
+    }
+    private void validateAmount(double weightAmount, String magnitude) {
+        Magnitude.fromString(magnitude).validateMaxLimit(weightAmount);
     }
 
     private void validateName(String name) {

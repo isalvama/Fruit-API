@@ -3,6 +3,7 @@ package cat.itacademy.s04.s02.n01.fruit.application.repository;
 import cat.itacademy.s04.s02.n01.fruit.application.repository.entity.FruitJpaEntity;
 import cat.itacademy.s04.s02.n01.fruit.application.repository.entity.FruitMapper;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
+import cat.itacademy.s04.s02.n01.provider.application.repository.entity.ProviderMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -26,7 +27,8 @@ public class JPAFruitRepositoryImpl implements FruitRepository{
                 .map(entity -> {
                     entity.updateFruit(
                             fruit.getName().name(),
-                            fruit.getWeight().amount()
+                            fruit.getWeightInKg().amount(),
+                            ProviderMapper.toEntity(fruit.getProvider())
                     );
                     return jpaSpringDataRepository.save(entity);
                 }).orElseGet(() -> jpaSpringDataRepository.save(FruitMapper.toEntity(fruit)));
@@ -37,6 +39,12 @@ public class JPAFruitRepositoryImpl implements FruitRepository{
     public List<Fruit> getAllFruits() {
         List<FruitJpaEntity> allFruitsJpaEntities = jpaSpringDataRepository.findAll();
         return allFruitsJpaEntities.stream().map(FruitMapper::toDomain).toList();
+    }
+
+    @Override
+    public List<Fruit> getFruitsByProviderId(Long id) {
+        List<FruitJpaEntity> fruitJpaEntities = jpaSpringDataRepository.findByProviderId(id);
+        return fruitJpaEntities.stream().map(FruitMapper::toDomain).toList();
     }
 
     @Override

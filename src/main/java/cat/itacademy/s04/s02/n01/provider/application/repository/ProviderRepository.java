@@ -7,4 +7,5 @@ import java.util.Optional;
 public interface ProviderRepository {
     Provider registerProvider(Provider provider);
     Optional<Provider> getProviderByName(String name);
+    Optional<Provider> getProviderById(Long ProviderId);
 }

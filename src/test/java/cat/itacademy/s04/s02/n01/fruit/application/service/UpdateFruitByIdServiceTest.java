@@ -9,6 +9,8 @@ import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
 import cat.itacademy.s04.s02.n01.common.domain.value_object.Name;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Magnitude;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Weight;
+import cat.itacademy.s04.s02.n01.provider.domain.model.Country;
+import cat.itacademy.s04.s02.n01.provider.domain.model.Provider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
@@ -22,12 +24,18 @@ import static org.mockito.Mockito.*;
 class UpdateFruitByIdServiceTest {
     private UpdateFruitByIdUseCase updateFruitByIdUseCase;
     private FruitRepository fruitRepository;
+
+    private static final String PROVIDER_NAME = "Fruit Provider";
+    private static final String COUNTRY = "US";
+    private static final Long PROVIDER_ID = 1L;
+    private static final Provider PROVIDER = new Provider(PROVIDER_ID, Name.of(PROVIDER_NAME), Country.of(COUNTRY));
+
     private static final Long ID = 123L;
     private static final String NAME = "Fruit Name";
     private static final Double WEIGHT = 12.0;
     private static final Name FRUIT_NAME = Name.of(NAME);
     private static final Weight WEIGHT_IN_KG = Weight.inKiloGrams(WEIGHT);
-    private static final Fruit FRUIT = new Fruit(ID, FRUIT_NAME, WEIGHT_IN_KG);
+    private static final Fruit FRUIT = new Fruit(ID, FRUIT_NAME, WEIGHT_IN_KG, PROVIDER);
     private static final String KG_MAGNITUDE_CONST_STRING = "KILOGRAMS";
 
 
@@ -46,7 +54,7 @@ class UpdateFruitByIdServiceTest {
         Fruit fruit = updateFruitByIdUseCase.execute(ID, updateFruitRequestDTO);
         assertNotNull(fruit);
         assertEquals(NAME, fruit.getName().name());
-        assertEquals(newWeight, fruit.getWeight().amount());
+        assertEquals(newWeight, fruit.getWeightInKg().amount());
 
         verify(fruitRepository).getFruitById(any());
         verify(fruitRepository).saveFruit(any(Fruit.class));
@@ -57,12 +65,15 @@ class UpdateFruitByIdServiceTest {
     void updateFruit_newName() {
         final String newName = "Kiwi";
         UpdateFruitRequestDTO updateFruitRequestDTO = new UpdateFruitRequestDTO(newName, null, null);
+
         when(fruitRepository.getFruitById(ID)).thenReturn(Optional.of(FRUIT));
         when(fruitRepository.saveFruit(any(Fruit.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
+
         Fruit fruit = updateFruitByIdUseCase.execute(ID, updateFruitRequestDTO);
+
         assertNotNull(fruit);
         assertEquals(newName, fruit.getName().name());
-        assertEquals(WEIGHT, fruit.getWeight().amount());
+        assertEquals(WEIGHT, fruit.getWeightInKg().amount());
 
         verify(fruitRepository).getFruitById(any());
         verify(fruitRepository).saveFruit(any(Fruit.class));
@@ -78,7 +89,7 @@ class UpdateFruitByIdServiceTest {
         Fruit fruit = updateFruitByIdUseCase.execute(ID, updateFruitRequestDTO);
         assertNotNull(fruit);
         assertEquals(newName, fruit.getName().name());
-        assertEquals(newWeight, fruit.getWeight().amount());
+        assertEquals(newWeight, fruit.getWeightInKg().amount());
 
         verify(fruitRepository).getFruitById(any());
         verify(fruitRepository).saveFruit(any(Fruit.class));
@@ -94,7 +105,7 @@ class UpdateFruitByIdServiceTest {
         Fruit fruit = updateFruitByIdUseCase.execute(ID, updateFruitRequestDTO);
         assertNotNull(fruit);
         assertEquals(newName, fruit.getName().name());
-        assertEquals(Magnitude.POUNDS.convertToKg(newWeight), fruit.getWeight().amount());
+        assertEquals(Magnitude.POUNDS.convertToKg(newWeight), fruit.getWeightInKg().amount());
 
         verify(fruitRepository).getFruitById(any());
         verify(fruitRepository).saveFruit(any(Fruit.class));
@@ -109,7 +120,7 @@ class UpdateFruitByIdServiceTest {
         Fruit fruit = updateFruitByIdUseCase.execute(ID, updateFruitRequestDTO);
         assertNotNull(fruit);
         assertEquals(NAME, fruit.getName().name());
-        assertEquals(WEIGHT, fruit.getWeight().amount());
+        assertEquals(WEIGHT, fruit.getWeightInKg().amount());
 
         verify(fruitRepository).getFruitById(any());
         verify(fruitRepository).saveFruit(any(Fruit.class));
@@ -123,7 +134,7 @@ class UpdateFruitByIdServiceTest {
         Fruit fruit = updateFruitByIdUseCase.execute(ID, updateFruitRequestDTO);
         assertNotNull(fruit);
         assertEquals(NAME, fruit.getName().name());
-        assertEquals(WEIGHT, fruit.getWeight().amount());
+        assertEquals(WEIGHT, fruit.getWeightInKg().amount());
 
         verify(fruitRepository).getFruitById(any());
         verify(fruitRepository).saveFruit(any(Fruit.class));
