@@ -17,6 +17,4 @@ public record FruitResponseDTO(Long id, String name, double weightInKg){
     public static List<FruitResponseDTO> from (List<Fruit> fruits){
         return fruits.stream().map(FruitResponseDTO::from).toList();
     }
-
-
 }
