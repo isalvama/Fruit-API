@@ -1,8 +1,10 @@
 package cat.itacademy.s04.s02.n01.provider.controller;
 
 import cat.itacademy.s04.s02.n01.provider.application.usecase.RegisterProviderUseCase;
+import cat.itacademy.s04.s02.n01.provider.application.usecase.UpdateProviderByIdUseCase;
 import cat.itacademy.s04.s02.n01.provider.domain.model.Provider;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -18,6 +20,7 @@ import java.net.URI;
     public class ProviderRestController {
 
         private final RegisterProviderUseCase registerProviderUseCase;
+        private final UpdateProviderByIdUseCase updateProviderByIdUseCase;
 
         @PostMapping
         public ResponseEntity<ProviderResponseDTO> registerProvider(@Valid @RequestBody CreateProviderRequestDTO request){
@@ -29,5 +32,12 @@ import java.net.URI;
                     .buildAndExpand(provider.getId())
                     .toUri();
             return ResponseEntity.created(location).body(providerResponseDTO);
+        }
+
+        @PatchMapping("/{id}")
+        public ResponseEntity<ProviderResponseDTO> updateFruitById(@PathVariable @Positive(message = "The ID must be a positive number") Long id, @Valid @RequestBody UpdateProviderRequestDTO updateProviderRequestDTO){
+            Provider provider = updateProviderByIdUseCase.execute(id, updateProviderRequestDTO);
+            ProviderResponseDTO providerResponseDTO = ProviderResponseDTO.from(provider);
+            return ResponseEntity.ok(providerResponseDTO);
         }
     }
