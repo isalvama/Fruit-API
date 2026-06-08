@@ -1,7 +1,7 @@
 package cat.itacademy.s04.s02.n01.fruit.application.service;
 
 import cat.itacademy.s04.s02.n01.fruit.application.repository.FruitRepository;
-import cat.itacademy.s04.s02.n01.fruit.application.repository.H2FruitRepositoryImpl;
+import cat.itacademy.s04.s02.n01.fruit.application.repository.JPAFruitRepositoryImpl;
 import cat.itacademy.s04.s02.n01.fruit.application.usecases.CreateFruitUseCase;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
 import cat.itacademy.s04.s02.n01.common.domain.value_object.Name;
@@ -25,7 +25,7 @@ class CreateFruitServiceTest {
 
     @BeforeEach
     void setUp(){
-        fruitRepository = mock(H2FruitRepositoryImpl.class);
+        fruitRepository = mock(JPAFruitRepositoryImpl.class);
         createFruitUseCase = new CreateFruitService(fruitRepository);
     }
 

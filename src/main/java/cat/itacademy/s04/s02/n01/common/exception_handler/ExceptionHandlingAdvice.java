@@ -1,4 +1,4 @@
-package cat.itacademy.s04.s02.n01.fruit.controller.exception_handler;
+package cat.itacademy.s04.s02.n01.common.exception_handler;
 
 import cat.itacademy.s04.s02.n01.fruit.controller.exception.FruitNotFoundException;
 import cat.itacademy.s04.s02.n01.fruit.controller.exception.InvalidRequestException;

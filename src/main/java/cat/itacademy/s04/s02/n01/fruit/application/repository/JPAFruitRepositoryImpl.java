@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class H2FruitRepositoryImpl implements FruitRepository{
+public class JPAFruitRepositoryImpl implements FruitRepository{
 
     private final JpaFruitSpringDataRepository jpaSpringDataRepository;
 

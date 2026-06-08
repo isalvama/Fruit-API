@@ -1,7 +1,7 @@
 package cat.itacademy.s04.s02.n01.fruit.application.service;
 
 import cat.itacademy.s04.s02.n01.fruit.application.repository.FruitRepository;
-import cat.itacademy.s04.s02.n01.fruit.application.repository.H2FruitRepositoryImpl;
+import cat.itacademy.s04.s02.n01.fruit.application.repository.JPAFruitRepositoryImpl;
 import cat.itacademy.s04.s02.n01.fruit.application.usecases.UpdateFruitByIdUseCase;
 import cat.itacademy.s04.s02.n01.fruit.controller.UpdateFruitRequestDTO;
 import cat.itacademy.s04.s02.n01.fruit.controller.exception.FruitNotFoundException;
@@ -33,7 +33,7 @@ class UpdateFruitByIdServiceTest {
 
     @BeforeEach
     void setUp() {
-        fruitRepository = mock(H2FruitRepositoryImpl.class);
+        fruitRepository = mock(JPAFruitRepositoryImpl.class);
         updateFruitByIdUseCase = new UpdateFruitByIdService(fruitRepository);
     }
 

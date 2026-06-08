@@ -1,4 +1,5 @@
 package cat.itacademy.s04.s02.n01.fruit;
+import cat.itacademy.s04.s02.n01.FruitApiH2Application;
 import cat.itacademy.s04.s02.n01.fruit.application.repository.FruitRepository;
 import cat.itacademy.s04.s02.n01.fruit.controller.CreateFruitRequestDTO;
 import cat.itacademy.s04.s02.n01.fruit.controller.UpdateFruitRequestDTO;
