@@ -1,12 +1,6 @@
 package cat.itacademy.s04.s02.n01.provider.application.service;
 
 import cat.itacademy.s04.s02.n01.common.domain.value_object.Name;
-import cat.itacademy.s04.s02.n01.fruit.application.repository.FruitRepository;
-import cat.itacademy.s04.s02.n01.fruit.application.repository.JPAFruitRepositoryImpl;
-import cat.itacademy.s04.s02.n01.fruit.application.service.CreateFruitService;
-import cat.itacademy.s04.s02.n01.fruit.application.usecases.CreateFruitUseCase;
-import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
-import cat.itacademy.s04.s02.n01.fruit.domain.model.Weight;
 import cat.itacademy.s04.s02.n01.provider.application.repository.JPAProviderRepositoryImpl;
 import cat.itacademy.s04.s02.n01.provider.application.repository.ProviderRepository;
 import cat.itacademy.s04.s02.n01.provider.application.usecase.RegisterProviderUseCase;

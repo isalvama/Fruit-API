@@ -1,6 +1,5 @@
 package cat.itacademy.s04.s02.n01.fruit.domain.model;
 
-import cat.itacademy.s04.s02.n01.fruit.controller.exception.InvalidRequestException;
 import cat.itacademy.s04.s02.n01.fruit.domain.exception.InvalidWeightException;
 import lombok.Getter;
 
@@ -22,12 +21,9 @@ public enum Magnitude {
         this.maxLimit = maxLimit;
     }
 
-    public void validate(double amount) {
-        if (amount <= 0) {
-            throw new InvalidWeightException("Weight can not be negative");
-        }
+    public void validateMaxLimit(double amount) {
         if (amount > maxLimit) {
-            throw new InvalidWeightException(String.format("Weight cannot be greater than %s %s", maxLimit, symbol));
+            throw new InvalidWeightException(String.format("Weight amount cannot be greater than %s %s", maxLimit, symbol));
         }
     }
 

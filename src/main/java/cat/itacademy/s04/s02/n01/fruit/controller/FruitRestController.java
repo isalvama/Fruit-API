@@ -19,22 +19,22 @@ import java.util.List;
 @Validated
 public class FruitRestController {
 
-    private final CreateFruitUseCase createFruitUseCase;
+    private final RegisterFruitUseCase registerFruitUseCase;
     private final GetAllFruitsUseCase getAllFruitsUseCase;
     private final GetFruitByIdUseCase getFruitByIdUseCase;
     private final UpdateFruitByIdUseCase updateFruitByIdUseCase;
     private final DeleteFruitByIdUseCase deleteFruitByIdUseCase;
 
     @PostMapping
-    public ResponseEntity<FruitResponseDTO> createFruit(@Valid @RequestBody CreateFruitRequestDTO request){
-        Fruit fruit = createFruitUseCase.createFruit(request.name(), request.weightAmount(), request.magnitude());
-        FruitResponseDTO createFruitResponseDTO = FruitResponseDTO.from(fruit);
+    public ResponseEntity<FruitResponseDTO> registerFruit(@Valid @RequestBody RegisterFruitRequestDTO request){
+        Fruit fruit = registerFruitUseCase.registerFruit(request.name(), request.weightAmount(), request.magnitude(), request.providerId());
+        FruitResponseDTO fruitResponseDTO = FruitResponseDTO.from(fruit);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(fruit.getId())
                 .toUri();
-        return ResponseEntity.created(location).body(createFruitResponseDTO);
+        return ResponseEntity.created(location).body(fruitResponseDTO);
     }
 
     @GetMapping

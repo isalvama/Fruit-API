@@ -7,6 +7,8 @@ import cat.itacademy.s04.s02.n01.fruit.controller.exception.FruitNotFoundExcepti
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
 import cat.itacademy.s04.s02.n01.common.domain.value_object.Name;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Weight;
+import cat.itacademy.s04.s02.n01.provider.domain.model.Country;
+import cat.itacademy.s04.s02.n01.provider.domain.model.Provider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,11 +19,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class GetAllFruitsServiceTest {
+    private static final String PROVIDER_NAME = "Fruit Provider";
+    private static final String COUNTRY = "US";
+    private static final Long PROVIDER_ID = 1L;
+    private static final Provider PROVIDER = new Provider(PROVIDER_ID, Name.of(PROVIDER_NAME), Country.of(COUNTRY));
+
     private static final String NAME = "Pineapple";
     private static final Double WEIGHT = 4.6;
     private static final String MAGNITUDE = "KILOGRAMS";
     private static final String API_URL = "/api/fruits";
-    private static final Fruit FRUIT = Fruit.create(Name.of(NAME), Weight.inKiloGrams(WEIGHT));
+    private static final Fruit FRUIT = Fruit.create(Name.of(NAME), Weight.inKiloGrams(WEIGHT), PROVIDER);
     private FruitRepository fruitRepository;
     private GetAllFruitsUseCase getAllFruitsUseCase;
 
@@ -36,14 +43,14 @@ class GetAllFruitsServiceTest {
     void execute_shouldReturnAListOfFruits() {
         String fruit2Name = "Kiwi";
         double fruit2WeightAmount = 0.3;
-        Fruit fruit2 = Fruit.create(Name.of(fruit2Name), Weight.inKiloGrams(fruit2WeightAmount));
+        Fruit fruit2 = Fruit.create(Name.of(fruit2Name), Weight.inKiloGrams(fruit2WeightAmount), PROVIDER);
         when(fruitRepository.getAllFruits()).thenReturn(List.of(FRUIT, fruit2));
 
         List<Fruit> fruits = getAllFruitsUseCase.execute();
         assertEquals(2, fruits.size());
-        assertEquals(WEIGHT, fruits.getFirst().getWeight().amount());
+        assertEquals(WEIGHT, fruits.getFirst().getWeightInKg().amount());
         assertEquals(NAME, fruits.getFirst().getName().name());
-        assertEquals(fruit2WeightAmount, fruits.get(1).getWeight().amount());
+        assertEquals(fruit2WeightAmount, fruits.get(1).getWeightInKg().amount());
         assertEquals(fruit2Name, fruits.get(1).getName().name());
     }
 

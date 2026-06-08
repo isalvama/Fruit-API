@@ -6,23 +6,24 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CreateFruitRequestDTOTest {
+    private final static Long PROVIDER_ID = 1L;
 
     @Test
     void constructor_withValidMagnitudesDoesNotThrowException(){
-        assertDoesNotThrow(() -> {new CreateFruitRequestDTO("Apple", 1.0, "KILOGRAMS");});
-        assertDoesNotThrow(() -> {new CreateFruitRequestDTO("Apple", 1.0, "POUNDS");});
+        assertDoesNotThrow(() -> {new RegisterFruitRequestDTO("Apple", 1.0, "KILOGRAMS", PROVIDER_ID);});
+        assertDoesNotThrow(() -> {new RegisterFruitRequestDTO("Apple", 1.0, "POUNDS", PROVIDER_ID);});
     }
 
     @Test
     void constructor_withInvalidMagnitude_throwsInvalidRequestException(){
-        assertThrows(InvalidRequestException.class, () -> {new CreateFruitRequestDTO("Apple", 1.0, "INVALID_MAGNITUDE");
+        assertThrows(InvalidRequestException.class, () -> {new RegisterFruitRequestDTO("Apple", 1.0, "INVALID_MAGNITUDE", PROVIDER_ID);
         }
         );
     }
 
     @Test
     void constructor_withBlankMagnitude_throwsInvalidRequestException(){
-        assertThrows(InvalidRequestException.class, () -> {new CreateFruitRequestDTO("Apple", 1.0, "");
+        assertThrows(InvalidRequestException.class, () -> {new RegisterFruitRequestDTO("Apple", 1.0, "", PROVIDER_ID);
                 }
         );
     }

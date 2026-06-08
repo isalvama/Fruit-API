@@ -29,5 +29,14 @@ public class JPAProviderRepositoryImpl implements ProviderRepository {
         }
        return Optional.empty();
     }
+
+    @Override
+    public Optional<Provider> getProviderById(Long id) {
+        Optional<ProviderJPAEntity> providerJpaEntity = jpaProviderSpringDataRepository.findById(id.toString());
+        if (providerJpaEntity.isPresent()){
+            return providerJpaEntity.map(ProviderMapper::toDomain);
+        }
+        return Optional.empty();
+    }
 }
 
