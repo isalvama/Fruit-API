@@ -22,6 +22,7 @@ public class FruitRestController {
     private final RegisterFruitUseCase registerFruitUseCase;
     private final GetAllFruitsUseCase getAllFruitsUseCase;
     private final GetFruitByIdUseCase getFruitByIdUseCase;
+    private final GetFruitsByProviderIdUseCase getFruitsByProviderIdUseCase;
     private final UpdateFruitByIdUseCase updateFruitByIdUseCase;
     private final DeleteFruitByIdUseCase deleteFruitByIdUseCase;
 
@@ -40,8 +41,8 @@ public class FruitRestController {
     @GetMapping
     public ResponseEntity<List<FruitResponseDTO>> getFruits(){
         List<Fruit> fruits = getAllFruitsUseCase.execute();
-        List<FruitResponseDTO> createFruitResponseDTOs = FruitResponseDTO.from(fruits);
-        return ResponseEntity.ok().body(createFruitResponseDTOs);
+        List<FruitResponseDTO> fruitResponseDTOs = FruitResponseDTO.from(fruits);
+        return ResponseEntity.ok().body(fruitResponseDTOs);
     }
 
     @GetMapping("/{id}")
@@ -49,6 +50,13 @@ public class FruitRestController {
         Fruit fruit = getFruitByIdUseCase.execute(id);
         FruitResponseDTO fruitResponseDTO = FruitResponseDTO.from(fruit);
         return ResponseEntity.ok(fruitResponseDTO);
+    }
+
+    @GetMapping("/provider/{providerId}")
+    public ResponseEntity<List<FruitResponseDTO>> getFruitsByProviderId(@PathVariable @Positive(message = "The ID must be a positive number") Long providerId){
+        List<Fruit> fruits = getFruitsByProviderIdUseCase.execute(providerId);
+        List<FruitResponseDTO> fruitResponseDTOs = FruitResponseDTO.from(fruits);
+        return ResponseEntity.ok().body(fruitResponseDTOs);
     }
 
     @PatchMapping("/{id}")

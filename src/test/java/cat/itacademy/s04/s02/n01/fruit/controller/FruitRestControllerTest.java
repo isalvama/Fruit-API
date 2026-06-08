@@ -4,6 +4,7 @@ import cat.itacademy.s04.s02.n01.fruit.application.service.RegisterFruitService;
 import cat.itacademy.s04.s02.n01.fruit.application.service.GetAllFruitsService;
 import cat.itacademy.s04.s02.n01.fruit.application.service.GetFruitByIdService;
 import cat.itacademy.s04.s02.n01.fruit.application.usecases.DeleteFruitByIdUseCase;
+import cat.itacademy.s04.s02.n01.fruit.application.usecases.GetFruitsByProviderIdUseCase;
 import cat.itacademy.s04.s02.n01.fruit.application.usecases.UpdateFruitByIdUseCase;
 import cat.itacademy.s04.s02.n01.fruit.controller.exception.FruitNotFoundException;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
@@ -74,6 +75,9 @@ class FruitRestControllerTest {
 
     @MockitoBean
     private DeleteFruitByIdUseCase deleteFruitByIdUseCase;
+
+    @MockitoBean
+    private GetFruitsByProviderIdUseCase getFruitsByProviderIdUseCase;
 
     @BeforeEach
     void setUp() {
@@ -231,6 +235,75 @@ class FruitRestControllerTest {
 
             verify(getAllFruitsUseCase).execute();
         }
+    }
+
+    @Nested
+    @DisplayName("GET /api/fruits/provider/{providerId}")
+    class GetFruitsByProviderId {
+        private final static String GET_FRUITS_BY_PROVIDER_URL_STRING = API_URL_STRING + "/provider/{providerId}";
+        private static final Long PROVIDER_ID = 1L;
+
+        @Test
+        void getFruitsByProviderId_returns201WithFruitData() throws Exception {
+            when(getFruitsByProviderIdUseCase.execute(PROVIDER_ID)).thenReturn(List.of(FRUIT));
+
+            ResultActions result = mockMvc.perform(get(GET_FRUITS_BY_PROVIDER_URL_STRING, PROVIDER_ID)
+                    .contentType(MediaType.APPLICATION_JSON));
+
+            result.andExpect(status().isOk())
+                    .andExpect(jsonPath("$[0].id").exists())
+                    .andExpect(jsonPath("$[0].name").value(NAME_OF_FRUIT))
+                    .andExpect(jsonPath("$[0].weightInKg").value(WEIGHT_AMOUNT))
+                    .andExpect(jsonPath("$[0].providerId").value(PROVIDER_ID));
+
+            verify(getFruitsByProviderIdUseCase).execute(PROVIDER_ID);
+        }
+
+        @Test
+        @DisplayName("returns 404 Not Found when the service throws a ProviderNotFoundException")
+        void getFruitsByProviderId_returns404WhenProviderNotFoundExceptionIsThrown() throws Exception {
+
+            String exceptionMessage = "There are no providers with id ";
+            when(getFruitsByProviderIdUseCase.execute(PROVIDER_ID)).thenThrow(new ProviderNotFoundException(exceptionMessage + PROVIDER_ID));
+
+            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(GET_FRUITS_BY_PROVIDER_URL_STRING, PROVIDER_ID)
+                    .contentType(MediaType.APPLICATION_JSON));
+
+            result.andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.title", Matchers.containsString("Provider Not Found")))
+                    .andExpect(jsonPath("$.detail", Matchers.containsString(exceptionMessage)));
+
+            verify(getFruitsByProviderIdUseCase).execute(PROVIDER_ID);
+        }
+
+        @Test
+        @DisplayName("returns 404 Not Found when the service throws a FruitNotFoundException")
+        void getFruitsByProviderId_returns404WhenFruitNotFoundExceptionIsThrown() throws Exception {
+
+            String exceptionMessage = "There are no fruits registered with the provider with id ";
+            when(getFruitsByProviderIdUseCase.execute(PROVIDER_ID)).thenThrow(new FruitNotFoundException(exceptionMessage + PROVIDER_ID));
+
+            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(GET_FRUITS_BY_PROVIDER_URL_STRING, PROVIDER_ID)
+                    .contentType(MediaType.APPLICATION_JSON));
+
+            result.andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.title", Matchers.containsString("Fruit Not Found")))
+                    .andExpect(jsonPath("$.detail", Matchers.containsString(exceptionMessage)));
+
+            verify(getFruitsByProviderIdUseCase).execute(PROVIDER_ID);
+        }
+
+        @Test
+        void getFruitsByProviderId_returns400BadRequestWhenIdIsNegative() throws Exception {
+                ResultActions result = mockMvc.perform(get(GET_FRUITS_BY_PROVIDER_URL_STRING, -1)
+                        .contentType(MediaType.APPLICATION_JSON));
+
+                result.andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.title", containsString("Validation Error")))
+                        .andExpect(jsonPath("$.errors").exists());
+
+                verifyNoInteractions(getFruitsByProviderIdUseCase);
+            }
     }
 
     @Nested

@@ -42,6 +42,12 @@ public class JPAFruitRepositoryImpl implements FruitRepository{
     }
 
     @Override
+    public List<Fruit> getFruitsByProviderId(Long id) {
+        List<FruitJpaEntity> fruitJpaEntities = jpaSpringDataRepository.findByProviderId(id);
+        return fruitJpaEntities.stream().map(FruitMapper::toDomain).toList();
+    }
+
+    @Override
     public Optional<Fruit> getFruitById(Long id){
         Optional<FruitJpaEntity> fruitJpaEntity = jpaSpringDataRepository.findById(String.valueOf(id));
         return fruitJpaEntity.map(FruitMapper::toDomain);
