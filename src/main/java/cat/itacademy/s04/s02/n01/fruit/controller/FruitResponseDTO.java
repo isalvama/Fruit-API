@@ -4,7 +4,7 @@ import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
 
 import java.util.List;
 
-public record FruitResponseDTO(Long id, String name, Double weightInKg, Long ProviderId){
+public record FruitResponseDTO(Long id, String name, Double weightInKg, Long providerId){
 
     public static FruitResponseDTO from (Fruit fruit){
         return new FruitResponseDTO(

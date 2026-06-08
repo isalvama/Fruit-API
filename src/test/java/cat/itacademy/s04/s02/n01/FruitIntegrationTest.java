@@ -22,8 +22,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import tools.jackson.databind.ObjectMapper;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -85,7 +83,7 @@ class FruitIntegrationTest {
                     .andExpect(jsonPath("$.id").exists())
                     .andExpect(jsonPath("$.name").value(NAME))
                     .andExpect(jsonPath("$.weightInKg").value(WEIGHT))
-                    .andExpect(jsonPath("$.ProviderId").value(generatedProviderId));
+                    .andExpect(jsonPath("$.providerId").value(generatedProviderId));
         }
 
             @Test
