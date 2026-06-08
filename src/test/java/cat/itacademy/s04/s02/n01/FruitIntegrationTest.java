@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import tools.jackson.databind.ObjectMapper;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -42,6 +43,7 @@ class FruitIntegrationTest {
     private static final String API_URL = "/api/fruits";
     private static final Fruit FRUIT = Fruit.create(Name.of(NAME), Weight.inKiloGrams(WEIGHT), PROVIDER);
 
+
     @Autowired
     private FruitRepository fruitRepository;
 
@@ -54,10 +56,6 @@ class FruitIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @AfterEach
-    public void clear(){
-
-    }
 
     @Nested
     @DisplayName("PUT /api/fruits")
@@ -193,6 +191,69 @@ class FruitIntegrationTest {
                         .andExpect(jsonPath("$.detail", Matchers.containsString(id.toString())));
             }
         }
+
+    @Nested
+    @DisplayName("GET /api/fruits/provider/{providerId}")
+    class GetFruitsByProviderId {
+        private final String fruitName = "Kiwi";
+        private final double fruitWeightAmount = 0.3;
+        private final Fruit fruit = Fruit.create(Name.of(fruitName), Weight.inKiloGrams(fruitWeightAmount), PROVIDER);
+        private final static String GET_FRUITS_BY_PROVIDER_URL = API_URL + "/provider/{providerId}";
+        private Long generatedProviderId;
+        private Long generatedProviderId2;
+
+
+        @BeforeEach
+        void setUp(){
+            Provider provider = Provider.create(Name.of(PROVIDER_NAME), Country.of(COUNTRY));
+            Provider savedProvider = providerRepository.registerProvider(provider);
+            generatedProviderId = savedProvider.getId();
+
+            Provider provider2 = Provider.create(Name.of("Provider 2"), Country.of("BV"));
+            Provider savedProvider2 = providerRepository.registerProvider(provider);
+            generatedProviderId2 = savedProvider2.getId();
+
+            fruitRepository.saveFruit(FRUIT);
+            fruitRepository.saveFruit(fruit);
+        }
+
+        @Test
+        void getFruitsByProviderId_returns200WithFruitData() throws Exception {
+            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(GET_FRUITS_BY_PROVIDER_URL, generatedProviderId)
+                    .contentType(MediaType.APPLICATION_JSON));
+
+            result.andExpect(status().isOk())
+                    .andExpect(jsonPath("$", hasSize(2)))
+                    .andExpect(jsonPath("$[0].id").exists())
+                    .andExpect(jsonPath("$[0].name").value(NAME))
+                    .andExpect(jsonPath("$[0].weightInKg").value(WEIGHT))
+                    .andExpect(jsonPath("$[1].id").exists())
+                    .andExpect(jsonPath("$[1].name").value(fruitName))
+                    .andExpect(jsonPath("$[1].weightInKg").value(fruitWeightAmount));
+        }
+
+        @Test
+        void getFruitsByProviderId_returns404ProviderNotFound() throws Exception {
+            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(GET_FRUITS_BY_PROVIDER_URL, 909L)
+                    .contentType(MediaType.APPLICATION_JSON));
+
+            result.andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.title").value("Provider Not Found"))
+                    .andExpect(jsonPath("$.detail", containsString("Provider")))
+                    .andExpect(jsonPath("$.detail", containsString("id")));
+        }
+
+        @Test
+        void getFruitsByProviderId_returns404FruitNotFound() throws Exception {
+            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(GET_FRUITS_BY_PROVIDER_URL, generatedProviderId2)
+                    .contentType(MediaType.APPLICATION_JSON));
+
+            result.andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.title").value("Fruit Not Found"))
+                    .andExpect(jsonPath("$.detail", containsString("no fruits registered")))
+                    .andExpect(jsonPath("$.detail", containsString("provider with id")));
+        }
+    }
 
         @Nested
         @DisplayName("PATCH /api/fruits/{id}")
