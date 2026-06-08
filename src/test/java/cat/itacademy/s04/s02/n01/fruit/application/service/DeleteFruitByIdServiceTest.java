@@ -1,7 +1,7 @@
 package cat.itacademy.s04.s02.n01.fruit.application.service;
 
 import cat.itacademy.s04.s02.n01.fruit.application.repository.FruitRepository;
-import cat.itacademy.s04.s02.n01.fruit.application.repository.H2FruitRepositoryImpl;
+import cat.itacademy.s04.s02.n01.fruit.application.repository.JPAFruitRepositoryImpl;
 import cat.itacademy.s04.s02.n01.fruit.application.usecases.DeleteFruitByIdUseCase;
 import cat.itacademy.s04.s02.n01.fruit.controller.exception.FruitNotFoundException;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
@@ -29,7 +29,7 @@ class DeleteFruitByIdServiceTest {
 
     @BeforeEach
     void setUp() {
-        fruitRepository = mock(H2FruitRepositoryImpl.class);
+        fruitRepository = mock(JPAFruitRepositoryImpl.class);
         deleteFruitByIdUseCase = new DeleteFruitByIdService(fruitRepository);
     }
 
