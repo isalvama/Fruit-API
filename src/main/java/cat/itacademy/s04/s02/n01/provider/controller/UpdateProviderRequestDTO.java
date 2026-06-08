@@ -11,7 +11,9 @@ public record UpdateProviderRequestDTO(
         String country
 ) {
     public UpdateProviderRequestDTO {
-        validateValueNotBlank(name);
+        if (name != null) {
+            validateValueNotBlank(name);
+        }
     }
 
     private void validateValueNotBlank(String name) {
