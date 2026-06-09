@@ -3,6 +3,8 @@ package cat.itacademy.s04.s02.n01.common.exception_handler;
 import cat.itacademy.s04.s02.n01.fruit.controller.exception.FruitNotFoundException;
 import cat.itacademy.s04.s02.n01.fruit.controller.exception.InvalidRequestException;
 import cat.itacademy.s04.s02.n01.fruit.domain.exception.InvalidWeightException;
+import cat.itacademy.s04.s02.n01.provider.controller.exception.ProviderAlreadyExistsException;
+import cat.itacademy.s04.s02.n01.provider.controller.exception.ProviderHasAssociatedFruitsException;
 import cat.itacademy.s04.s02.n01.provider.controller.exception.ProviderNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -40,6 +42,24 @@ import java.util.Map;
     public ProblemDetail handleProviderNotFoundException (ProviderNotFoundException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
         problemDetail.setTitle("Provider Not Found");
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
+    }
+
+    @ResponseBody
+    @ExceptionHandler(ProviderAlreadyExistsException.class)
+    public ProblemDetail handleProviderAlreadyExistsException (ProviderAlreadyExistsException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setTitle("Provider Already Exists");
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
+    }
+
+    @ResponseBody
+    @ExceptionHandler(ProviderHasAssociatedFruitsException.class)
+    public ProblemDetail handleProviderHasAssociatedFruitsException (ProviderHasAssociatedFruitsException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setTitle("Provider In Use");
         problemDetail.setDetail(ex.getMessage());
         return problemDetail;
     }

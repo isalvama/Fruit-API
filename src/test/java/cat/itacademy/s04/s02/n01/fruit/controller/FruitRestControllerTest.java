@@ -560,7 +560,7 @@ class FruitRestControllerTest {
             String API_URL_STRING_ID = API_URL_STRING + "/{id}";
 
             @Test
-            void getFruitById_returns204() throws Exception {
+            void deleteFruitById_returns204() throws Exception {
                 ResultActions result = mockMvc.perform(delete(API_URL_STRING_ID, FRUIT.getId())
                         .contentType(MediaType.APPLICATION_JSON));
 
