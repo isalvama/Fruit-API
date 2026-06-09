@@ -19,20 +19,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class DeleteFruitByIdServiceTest {
-    private static final String PROVIDER_NAME = "Fruit Provider";
-    private static final String COUNTRY = "US";
-    private static final Long PROVIDER_ID = 1L;
-    private static final Provider PROVIDER = new Provider(PROVIDER_ID, Name.of(PROVIDER_NAME), Country.of(COUNTRY));
+    private static final Provider PROVIDER = new Provider(1L, Name.of("Fruit Provider"), Country.of("US"));
+
+    private static final Long ID = 123L;
+    private static final Fruit FRUIT = new Fruit(123L, Name.of("Fruit Name"), Weight.inKiloGrams(12.0), PROVIDER);
 
     private DeleteFruitByIdUseCase deleteFruitByIdUseCase;
     private FruitRepository fruitRepository;
-    private static final Long ID = 123L;
-    private static final String NAME = "Fruit Name";
-    private static final Double WEIGHT = 12.0;
-    private static final Name FRUIT_NAME = Name.of(NAME);
-    private static final Weight WEIGHT_IN_KG = Weight.inKiloGrams(WEIGHT);
-    private static final Fruit FRUIT = new Fruit(ID, FRUIT_NAME, WEIGHT_IN_KG, PROVIDER);
-
 
     @BeforeEach
     void setUp() {
