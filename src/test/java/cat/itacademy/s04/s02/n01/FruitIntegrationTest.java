@@ -6,6 +6,7 @@ import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
 import cat.itacademy.s04.s02.n01.common.domain.value_object.Name;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Weight;
 import cat.itacademy.s04.s02.n01.provider.application.repository.ProviderRepository;
+import cat.itacademy.s04.s02.n01.provider.controller.UpdateProviderRequestDTO;
 import cat.itacademy.s04.s02.n01.provider.domain.model.Country;
 import cat.itacademy.s04.s02.n01.provider.domain.model.Provider;
 import jakarta.transaction.Transactional;
@@ -23,6 +24,9 @@ import tools.jackson.databind.ObjectMapper;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -40,7 +44,8 @@ class FruitIntegrationTest {
     private static final String NAME = "Pineapple";
     private static final Double WEIGHT = 4.6;
     private static final String MAGNITUDE = "KILOGRAMS";
-    private static final String API_URL = "/api/fruits";
+    private static final String API_URL_FRUITS = "/api/fruits";
+    private static final String API_URL_PROVIDER = "/api/providers";
     private static final Fruit FRUIT = Fruit.create(Name.of(NAME), Weight.inKiloGrams(WEIGHT), PROVIDER);
 
 
@@ -73,11 +78,11 @@ class FruitIntegrationTest {
         void createFruit_returns201WithLocationAndBodyFruitWithId() throws Exception {
             RegisterFruitRequestDTO createFruitDTO = new RegisterFruitRequestDTO(NAME, WEIGHT, MAGNITUDE, PROVIDER_ID);
 
-            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post(API_URL)
+            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post(API_URL_FRUITS)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(createFruitDTO)));
             result.andExpect(status().isCreated())
-                    .andExpect(header().string("Location", containsString(API_URL + "/")))
+                    .andExpect(header().string("Location", containsString(API_URL_FRUITS + "/")))
                     .andExpect(jsonPath("$.id").exists())
                     .andExpect(jsonPath("$.name").value(NAME))
                     .andExpect(jsonPath("$.weightInKg").value(WEIGHT))
@@ -92,7 +97,7 @@ class FruitIntegrationTest {
                 RegisterFruitRequestDTO registerFruitRequestDTO = new RegisterFruitRequestDTO(NAME, WEIGHT, MAGNITUDE, providerId);
                 String exceptionMessage = String.format("Provider with id %s does not exist", providerId);
 
-                ResultActions result = mockMvc.perform(post(API_URL)
+                ResultActions result = mockMvc.perform(post(API_URL_FRUITS)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerFruitRequestDTO)));
 
@@ -121,7 +126,7 @@ class FruitIntegrationTest {
             Fruit fruit2 = Fruit.create(Name.of(fruit2Name), Weight.inKiloGrams(fruit2WeightAmount), PROVIDER);
             fruitRepository.saveFruit(FRUIT);
             fruitRepository.saveFruit(fruit2);
-            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(API_URL)
+            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(API_URL_FRUITS)
                     .contentType(MediaType.APPLICATION_JSON));
 
             result.andExpect(status().isOk())
@@ -138,7 +143,7 @@ class FruitIntegrationTest {
         @DisplayName("returns 404 Not Found when there are no registered fruits")
         void getFruit_returns404NotFound() throws Exception {
 
-            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(API_URL)
+            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(API_URL_FRUITS)
                     .contentType(MediaType.APPLICATION_JSON));
 
             result.andExpect(status().isNotFound())
@@ -158,7 +163,7 @@ class FruitIntegrationTest {
                 Fruit fruit = Fruit.create(Name.of(fruitName), Weight.inKiloGrams(fruitWeightAmount), PROVIDER);
                 fruitRepository.saveFruit(FRUIT);
                 fruitRepository.saveFruit(fruit);
-                ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(API_URL + "/{id}", 1L)
+                ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(API_URL_FRUITS + "/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON));
 
                 result.andExpect(status().isOk())
@@ -168,7 +173,7 @@ class FruitIntegrationTest {
 
 
 
-                ResultActions result2 = mockMvc.perform(MockMvcRequestBuilders.get(API_URL + "/{id}", 2)
+                ResultActions result2 = mockMvc.perform(MockMvcRequestBuilders.get(API_URL_FRUITS + "/{id}", 2)
                         .contentType(MediaType.APPLICATION_JSON));
 
                 result2.andExpect(status().isOk())
@@ -182,7 +187,7 @@ class FruitIntegrationTest {
             void getFruitById_returns404NotFound() throws Exception {
                 Long id = 103L;
 
-                ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(API_URL + "/{id}", id)
+                ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(API_URL_FRUITS + "/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON));
 
                 result.andExpect(status().isNotFound())
@@ -198,7 +203,7 @@ class FruitIntegrationTest {
         private final String fruitName = "Kiwi";
         private final double fruitWeightAmount = 0.3;
         private final Fruit fruit = Fruit.create(Name.of(fruitName), Weight.inKiloGrams(fruitWeightAmount), PROVIDER);
-        private final static String GET_FRUITS_BY_PROVIDER_URL = API_URL + "/provider/{providerId}";
+        private final static String GET_FRUITS_BY_PROVIDER_URL = API_URL_FRUITS + "/provider/{providerId}";
         private Long generatedProviderId;
         private Long generatedProviderId2;
 
@@ -314,7 +319,7 @@ class FruitIntegrationTest {
         @Test
         void deleteFruitById_returns204() throws Exception {
 
-            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete(API_URL + "/{id}", 1L)
+            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete(API_URL_FRUITS + "/{id}", 1L)
                     .contentType(MediaType.APPLICATION_JSON));
 
             result.andExpect(status().isNoContent());
@@ -323,13 +328,163 @@ class FruitIntegrationTest {
         @Test
         void deleteFruitById_returns404NotFound() throws Exception {
 
-            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete(API_URL + "/{id}", 909L)
+            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.delete(API_URL_FRUITS + "/{id}", 909L)
                     .contentType(MediaType.APPLICATION_JSON));
 
             result.andExpect(status().isNotFound())
                     .andExpect(jsonPath("$.title", Matchers.containsString("Fruit Not Found")))
                     .andExpect(jsonPath("$.detail", Matchers.containsString("registered")))
                     .andExpect(jsonPath("$.detail", Matchers.containsString("no")));
+        }
+
+        @Nested
+        @DisplayName("PATCH /api/providers/{id}")
+        class UpdateProviderById {
+            private static final String API_URL_STRING_ID = API_URL_PROVIDER + "/{id}";
+            private static final long ID = 1L;
+            private Long generatedProviderId;
+
+            @BeforeEach
+            void setUp(){
+                Provider provider = Provider.create(Name.of(PROVIDER_NAME), Country.of(COUNTRY));
+                Provider savedProvider = providerRepository.saveProvider(provider);
+                generatedProviderId = savedProvider.getId();
+
+                providerRepository.saveProvider(PROVIDER);
+            }
+
+            @Test
+            @DisplayName("returns 200 OK with updated provider data when input is valid")
+            void updateProviderById_withValidData_returns200WithUpdatedProviderData() throws Exception {
+                final String newProviderName = "New Provider";
+                final String newCountry = "SW";
+
+                UpdateProviderRequestDTO updateProviderRequestDTO = new UpdateProviderRequestDTO(newProviderName, newCountry);
+
+                ResultActions result = mockMvc.perform(patch(API_URL_STRING_ID, ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateProviderRequestDTO)));
+
+                result.andExpect(status().isOk())
+                        .andExpect(jsonPath("$.id").exists())
+                        .andExpect(jsonPath("$.name").value(newProviderName))
+                        .andExpect(jsonPath("$.country").value(newCountry));
+            }
+
+            @Test
+            @DisplayName("returns 200 OK with updated provider data when name is null and country valid")
+            void updateProviderById_withNullName_returns200WithUpdatedProviderData() throws Exception {
+                final String newCountry = "SW";
+
+                UpdateProviderRequestDTO updateProviderRequestDTO = new UpdateProviderRequestDTO(null, newCountry);
+
+                ResultActions result = mockMvc.perform(patch(API_URL_STRING_ID, ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateProviderRequestDTO)));
+
+                result.andExpect(status().isOk())
+                        .andExpect(jsonPath("$.id").value(ID))
+                        .andExpect(jsonPath("$.name").value(PROVIDER_NAME))
+                        .andExpect(jsonPath("$.country").value(newCountry));
+            }
+
+            @Test
+            @DisplayName("returns 200 OK with updated provider data when name is valid and country null")
+            void updateProviderById_withNullCountry_returns200WithUpdatedProviderData() throws Exception {
+                final String newProviderName = "New Provider";
+
+                UpdateProviderRequestDTO updateProviderRequestDTO = new UpdateProviderRequestDTO(newProviderName, null);
+
+                ResultActions result = mockMvc.perform(patch(API_URL_STRING_ID, ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateProviderRequestDTO)));
+
+                result.andExpect(status().isOk())
+                        .andExpect(jsonPath("$.id").value(ID))
+                        .andExpect(jsonPath("$.name").value(newProviderName))
+                        .andExpect(jsonPath("$.country").value(COUNTRY));
+            }
+
+            @Test
+            @DisplayName("returns 400 Bad Request when input data is invalid (name is < 2 size)")
+            void updateProviderById_withNameSizeLessThan2_returns400ValidationError() throws Exception {
+                String invalidName = "a";
+                UpdateProviderRequestDTO updateProviderRequestDTO = new UpdateProviderRequestDTO(invalidName, COUNTRY);
+
+                ResultActions result = mockMvc.perform(patch(API_URL_STRING_ID, ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateProviderRequestDTO)));
+
+                result.andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.title", Matchers.containsString("Validation Error")))
+                        .andExpect(jsonPath("$.errors.name", Matchers.containsString("2")));
+            }
+
+            @Test
+            @DisplayName("returns 400 Bad Request when input data is invalid (name is > 100 size)")
+            void updateProviderById_withNameSizeGreaterThan100_returns400ValidationError() throws Exception {
+                String invalidName = "a".repeat(101);
+                UpdateProviderRequestDTO updateProviderRequestDTO = new UpdateProviderRequestDTO(invalidName, COUNTRY);
+
+                ResultActions result = mockMvc.perform(patch(API_URL_STRING_ID, ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateProviderRequestDTO)));
+
+                result.andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.title", Matchers.containsString("Validation Error")))
+                        .andExpect(jsonPath("$.errors.name", Matchers.containsString("100")));
+            }
+
+
+            @Test
+            @DisplayName("returns 400 Bad Request when input data is invalid (country contains numbers)")
+            void updateProviderById_whenCountryContainsNumbers_returns400ValidationError() throws Exception {
+                UpdateProviderRequestDTO updateProviderRequestDTO = new UpdateProviderRequestDTO(PROVIDER_NAME, "r3");
+
+                ResultActions result = mockMvc.perform(patch(API_URL_STRING_ID, ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateProviderRequestDTO)));
+
+                result.andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.title", Matchers.containsString("Validation Error")))
+                        .andExpect(jsonPath("$.errors.country", Matchers.containsString("2 letters")));
+            }
+
+
+            @Test
+            @DisplayName("returns 400 Bad Request when input data is invalid (country is blank)")
+            void updateProviderById_whenMagnitudeIsInvalid_returns400ValidationError() throws Exception {
+                String jsonInput = """
+                        {
+                            "name": "Apple",
+                            "country": "  "
+                        }
+                        """;
+
+                ResultActions result = mockMvc.perform(patch(API_URL_STRING_ID, ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonInput));
+
+                result.andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.title", containsString("Validation Error In Input Data")))
+                        .andExpect(jsonPath("$.errors.country", containsString("Country")))
+                        .andExpect(jsonPath("$.errors.country", containsString("2 letters")));
+            }
+
+            @Test
+            @DisplayName("returns 404 Provider Not Found when the service throws a ProviderNotFoundException")
+            void updateProviderById_returns404WhenFruitNotFoundExceptionIsThrown() throws Exception {
+                UpdateProviderRequestDTO updateProviderRequestDTO = new UpdateProviderRequestDTO(PROVIDER_NAME, COUNTRY);
+
+                ResultActions result = mockMvc.perform(MockMvcRequestBuilders.patch(API_URL_STRING_ID, 909L)
+                        .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateProviderRequestDTO)));
+
+                result.andExpect(status().isNotFound())
+                        .andExpect(jsonPath("$.title", Matchers.containsString("Provider Not Found")))
+                        .andExpect(jsonPath("$.detail", Matchers.containsString("provider")))
+                        .andExpect(jsonPath("$.detail", Matchers.containsString("found")));
+
+            }
         }
     }
 }
