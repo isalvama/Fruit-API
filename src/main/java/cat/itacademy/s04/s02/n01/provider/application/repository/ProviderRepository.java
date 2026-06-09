@@ -5,7 +5,7 @@ import cat.itacademy.s04.s02.n01.provider.domain.model.Provider;
 import java.util.Optional;
 
 public interface ProviderRepository {
-    Provider registerProvider(Provider provider);
+    Provider saveProvider(Provider provider);
     Optional<Provider> getProviderByName(String name);
     Optional<Provider> getProviderById(Long ProviderId);
 }

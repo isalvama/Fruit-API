@@ -39,7 +39,7 @@ class RegisterProviderServiceTest {
 
     @Test
     void registerProvider_providerWithSameNameDoesNotExist() {
-        when(providerRepository.registerProvider(any(Provider.class))).thenReturn(PROVIDER);
+        when(providerRepository.saveProvider(any(Provider.class))).thenReturn(PROVIDER);
         when(providerRepository.getProviderByName(PROVIDER_NAME)).thenReturn(Optional.empty());
         Provider provider = registerProviderUseCase.execute(PROVIDER_NAME, COUNTRY);
 
@@ -48,17 +48,17 @@ class RegisterProviderServiceTest {
         assertEquals(COUNTRY, provider.getCountry().name());
 
         verify(providerRepository).getProviderByName(PROVIDER_NAME);
-        verify(providerRepository).registerProvider(any(Provider.class));
+        verify(providerRepository).saveProvider(any(Provider.class));
     }
 
     @Test
     void registerProvider_providerWithSameNameDoesExist() {
-        when(providerRepository.registerProvider(any(Provider.class))).thenReturn(PROVIDER);
+        when(providerRepository.saveProvider(any(Provider.class))).thenReturn(PROVIDER);
         when(providerRepository.getProviderByName(PROVIDER_NAME)).thenReturn(Optional.of(new Provider(23L, Name.of("Fruit Provider"), Country.of("ES"))));
         assertThrows(ProviderAlreadyExistsException.class, () -> registerProviderUseCase.execute(PROVIDER_NAME, COUNTRY));
 
         verify(providerRepository).getProviderByName(PROVIDER_NAME);
-        verify(providerRepository, never()).registerProvider(any(Provider.class));
+        verify(providerRepository, never()).saveProvider(any(Provider.class));
 
     }
 }

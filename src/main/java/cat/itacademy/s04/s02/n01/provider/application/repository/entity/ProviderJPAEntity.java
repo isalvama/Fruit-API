@@ -26,4 +26,9 @@ public class ProviderJPAEntity {
         private Long id;
         private String name;
         private String country;
-    }
+
+        public void updateProvider(String name, String country) {
+                this.name = name;
+                this.country = country;
+        }
+}
