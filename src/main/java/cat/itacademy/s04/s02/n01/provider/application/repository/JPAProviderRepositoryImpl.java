@@ -15,9 +15,20 @@ public class JPAProviderRepositoryImpl implements ProviderRepository {
     private final JpaProviderSpringDataRepository jpaProviderSpringDataRepository;
 
     @Override
-    public Provider registerProvider(Provider provider) {
-        ProviderJPAEntity providerJPAEntity = ProviderMapper.toEntity(provider);
-        providerJPAEntity = jpaProviderSpringDataRepository.save(providerJPAEntity);
+    public Provider saveProvider(Provider provider) {
+        if (provider.getId() == null) {
+            ProviderJPAEntity providerJPAEntity = ProviderMapper.toEntity(provider);
+            providerJPAEntity = jpaProviderSpringDataRepository.save(providerJPAEntity);
+            return ProviderMapper.toDomain(providerJPAEntity);
+        }
+        ProviderJPAEntity providerJPAEntity =  jpaProviderSpringDataRepository.findById(String.valueOf(provider.getId()))
+                .map(entity -> {
+                    entity.updateProvider(
+                            provider.getName().name(),
+                            provider.getCountry().name()
+                    );
+                    return jpaProviderSpringDataRepository.save(entity);
+                }).orElseGet(() -> jpaProviderSpringDataRepository.save(ProviderMapper.toEntity(provider)));
         return ProviderMapper.toDomain(providerJPAEntity);
     }
 

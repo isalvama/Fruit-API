@@ -22,6 +22,6 @@ public class RegisterProviderService implements RegisterProviderUseCase {
             throw new ProviderAlreadyExistsException(String.format("Provider with name %s already exists", name));
         }
         Provider provider = Provider.create(Name.of(name), Country.of(country));
-        return providerRepository.registerProvider(provider);
+        return providerRepository.saveProvider(provider);
     }
 }

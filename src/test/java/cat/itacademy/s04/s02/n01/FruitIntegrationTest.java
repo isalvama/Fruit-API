@@ -65,7 +65,7 @@ class FruitIntegrationTest {
         @BeforeEach
         void setUp(){
             Provider provider = Provider.create(Name.of(PROVIDER_NAME), Country.of(COUNTRY));
-            Provider savedProvider = providerRepository.registerProvider(provider);
+            Provider savedProvider = providerRepository.saveProvider(provider);
             this.generatedProviderId = savedProvider.getId();
         }
 
@@ -110,7 +110,7 @@ class FruitIntegrationTest {
         @BeforeEach
         void setUp(){
             Provider provider = Provider.create(Name.of(PROVIDER_NAME), Country.of(COUNTRY));
-            Provider savedProvider = providerRepository.registerProvider(provider);
+            Provider savedProvider = providerRepository.saveProvider(provider);
             this.generatedProviderId = savedProvider.getId();
         }
 
@@ -206,11 +206,11 @@ class FruitIntegrationTest {
         @BeforeEach
         void setUp(){
             Provider provider = Provider.create(Name.of(PROVIDER_NAME), Country.of(COUNTRY));
-            Provider savedProvider = providerRepository.registerProvider(provider);
+            Provider savedProvider = providerRepository.saveProvider(provider);
             generatedProviderId = savedProvider.getId();
 
             Provider provider2 = Provider.create(Name.of("Provider 2"), Country.of("BV"));
-            Provider savedProvider2 = providerRepository.registerProvider(provider);
+            Provider savedProvider2 = providerRepository.saveProvider(provider);
             generatedProviderId2 = savedProvider2.getId();
 
             fruitRepository.saveFruit(FRUIT);
