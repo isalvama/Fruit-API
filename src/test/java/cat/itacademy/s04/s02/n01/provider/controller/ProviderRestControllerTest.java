@@ -1,8 +1,11 @@
 package cat.itacademy.s04.s02.n01.provider.controller;
 
 import cat.itacademy.s04.s02.n01.common.domain.value_object.Name;
+import cat.itacademy.s04.s02.n01.provider.application.usecase.DeleteProviderByIdUseCase;
 import cat.itacademy.s04.s02.n01.provider.application.usecase.RegisterProviderUseCase;
 import cat.itacademy.s04.s02.n01.provider.application.usecase.UpdateProviderByIdUseCase;
+import cat.itacademy.s04.s02.n01.provider.controller.exception.ProviderAlreadyExistsException;
+import cat.itacademy.s04.s02.n01.provider.controller.exception.ProviderHasAssociatedFruitsException;
 import cat.itacademy.s04.s02.n01.provider.controller.exception.ProviderNotFoundException;
 import cat.itacademy.s04.s02.n01.provider.domain.model.Country;
 import cat.itacademy.s04.s02.n01.provider.domain.model.Provider;
@@ -23,6 +26,7 @@ import tools.jackson.databind.ObjectMapper;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -48,6 +52,9 @@ class ProviderRestControllerTest {
     @MockitoBean
     private UpdateProviderByIdUseCase updateProviderByIdUseCase;
 
+    @MockitoBean
+    private DeleteProviderByIdUseCase deleteProviderByIdUseCase;
+
     @BeforeEach
     void setUp() {
         objectMapper = new ObjectMapper();
@@ -61,6 +68,22 @@ class ProviderRestControllerTest {
         void registerProvider_withValidData_returns201WithLocationAndBodyProviderWithIdAndData() throws Exception {
             CreateProviderRequestDTO createProviderRequestDTO = new CreateProviderRequestDTO(PROVIDER_NAME, COUNTRY);
             when(registerProviderUseCase.execute(PROVIDER_NAME, COUNTRY)).thenReturn(PROVIDER);
+            ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post(API_URL_STRING)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(createProviderRequestDTO)));
+            result.andExpect(status().isCreated())
+                    .andExpect(header().string("Location", containsString("/api/providers/" + ID)))
+                    .andExpect(jsonPath("$.id").value(ID))
+                    .andExpect(jsonPath("$.name").value(PROVIDER_NAME))
+                    .andExpect(jsonPath("$.country").value(COUNTRY));
+            verify(registerProviderUseCase).execute(PROVIDER_NAME, COUNTRY);
+        }
+
+        @Test
+        void registerProvider_withValidData_returns400BadRequestProviderAlreadyExists() throws Exception {
+            CreateProviderRequestDTO createProviderRequestDTO = new CreateProviderRequestDTO(PROVIDER_NAME, COUNTRY);
+            String exceptionMessage = String.format("Provider with name %s already exists", PROVIDER_NAME);
+            when(registerProviderUseCase.execute(PROVIDER_NAME, COUNTRY)).thenThrow(new ProviderAlreadyExistsException(exceptionMessage));
             ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post(API_URL_STRING)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(createProviderRequestDTO)));
@@ -318,6 +341,67 @@ class ProviderRestControllerTest {
                         .andExpect(jsonPath("$.detail", Matchers.containsString(exceptionMessage)));
 
                 verify(updateProviderByIdUseCase).execute(ID, updateProviderRequestDTO);
+            }
+        }
+        @Nested
+        @DisplayName("DELETE /api/fruits/{id}")
+        class DeleteFruitById {
+            String API_URL_STRING_ID = API_URL_STRING + "/{id}";
+
+            @Test
+            void deleteProviderById_returns204() throws Exception {
+                ResultActions result = mockMvc.perform(delete(API_URL_STRING_ID, PROVIDER.getId())
+                        .contentType(MediaType.APPLICATION_JSON));
+
+                result.andExpect(status().isNoContent());
+
+                verify(deleteProviderByIdUseCase).execute(PROVIDER.getId());
+            }
+
+            @Test
+            @DisplayName("returns 400 Bad Request when input data is invalid (id is negative)")
+            void deleteProviderById_returns400BadRequestIdIsNegative() throws Exception {
+                ResultActions result = mockMvc.perform(delete(API_URL_STRING_ID, -1L)
+                        .contentType(MediaType.APPLICATION_JSON));
+
+                result.andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.title", Matchers.containsString("Validation Error in Parameter")))
+                        .andExpect(jsonPath("$.errors['deleteProviderById.id']", Matchers.containsString("ID")))
+                        .andExpect(jsonPath("$.errors['deleteProviderById.id']", Matchers.containsString("positive")));
+
+                verifyNoInteractions(deleteProviderByIdUseCase);
+            }
+
+            @Test
+            @DisplayName("returns 404 Not Found when the service throws a ProviderNotFoundException")
+            void deleteProviderById_returns404WhenProviderNotFoundExceptionIsThrown() throws Exception {
+                final String exceptionMessage = "There are no providers registered with the id " + ID;
+                doThrow(new ProviderNotFoundException(exceptionMessage)).when(deleteProviderByIdUseCase).execute(anyLong());
+
+                ResultActions result = mockMvc.perform(delete(API_URL_STRING_ID, ID)
+                        .contentType(MediaType.APPLICATION_JSON));
+
+                result.andExpect(status().isNotFound())
+                        .andExpect(jsonPath("$.title", Matchers.containsString("Provider Not Found")))
+                        .andExpect(jsonPath("$.detail", Matchers.containsString(exceptionMessage)));
+
+                verify(deleteProviderByIdUseCase).execute(anyLong());
+            }
+
+            @Test
+            @DisplayName("returns 401 Bad Request Found when the service throws a ProviderHasAssociatedFruitsException")
+            void deleteProviderById_returns404WhenProviderHasAssociatedFruitsExceptionIsThrown() throws Exception {
+                final String exceptionMessage = String.format("Provider with id %s cannot be deleted because it has associated fruits", ID);
+                doThrow(new ProviderHasAssociatedFruitsException(exceptionMessage)).when(deleteProviderByIdUseCase).execute(anyLong());
+
+                ResultActions result = mockMvc.perform(delete(API_URL_STRING_ID, ID)
+                        .contentType(MediaType.APPLICATION_JSON));
+
+                result.andExpect(status().isBadRequest())
+                        .andExpect(jsonPath("$.title", Matchers.containsString("Provider In Use")))
+                        .andExpect(jsonPath("$.detail", Matchers.containsString(exceptionMessage)));
+
+                verify(deleteProviderByIdUseCase).execute(anyLong());
             }
         }
     }
