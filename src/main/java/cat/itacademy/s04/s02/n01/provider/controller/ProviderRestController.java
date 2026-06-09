@@ -1,5 +1,7 @@
 package cat.itacademy.s04.s02.n01.provider.controller;
 
+import cat.itacademy.s04.s02.n01.fruit.controller.FruitResponseDTO;
+import cat.itacademy.s04.s02.n01.provider.application.usecase.DeleteProviderByIdUseCase;
 import cat.itacademy.s04.s02.n01.provider.application.usecase.RegisterProviderUseCase;
 import cat.itacademy.s04.s02.n01.provider.application.usecase.UpdateProviderByIdUseCase;
 import cat.itacademy.s04.s02.n01.provider.domain.model.Provider;
@@ -21,6 +23,7 @@ import java.net.URI;
 
         private final RegisterProviderUseCase registerProviderUseCase;
         private final UpdateProviderByIdUseCase updateProviderByIdUseCase;
+        private final DeleteProviderByIdUseCase deleteProviderByIdUseCase;
 
         @PostMapping
         public ResponseEntity<ProviderResponseDTO> registerProvider(@Valid @RequestBody CreateProviderRequestDTO request){
@@ -35,9 +38,15 @@ import java.net.URI;
         }
 
         @PatchMapping("/{id}")
-        public ResponseEntity<ProviderResponseDTO> updateFruitById(@PathVariable @Positive(message = "The ID must be a positive number") Long id, @Valid @RequestBody UpdateProviderRequestDTO updateProviderRequestDTO){
+        public ResponseEntity<ProviderResponseDTO> updateProviderById(@PathVariable @Positive(message = "The ID must be a positive number") Long id, @Valid @RequestBody UpdateProviderRequestDTO updateProviderRequestDTO){
             Provider provider = updateProviderByIdUseCase.execute(id, updateProviderRequestDTO);
             ProviderResponseDTO providerResponseDTO = ProviderResponseDTO.from(provider);
             return ResponseEntity.ok(providerResponseDTO);
+        }
+
+        @DeleteMapping("/{id}")
+        public ResponseEntity<FruitResponseDTO> deleteProviderById(@PathVariable @Positive(message = "The ID must be a positive number") Long id){
+            deleteProviderByIdUseCase.execute(id);
+            return ResponseEntity.noContent().build();
         }
     }

@@ -49,5 +49,10 @@ public class JPAProviderRepositoryImpl implements ProviderRepository {
         }
         return Optional.empty();
     }
+
+    @Override
+    public void deleteProviderById(Long id){
+        jpaProviderSpringDataRepository.deleteById(String.valueOf(id));
+    }
 }
 

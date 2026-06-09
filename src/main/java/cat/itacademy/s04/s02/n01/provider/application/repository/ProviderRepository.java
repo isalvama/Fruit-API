@@ -8,4 +8,5 @@ public interface ProviderRepository {
     Provider saveProvider(Provider provider);
     Optional<Provider> getProviderByName(String name);
     Optional<Provider> getProviderById(Long ProviderId);
+    void deleteProviderById(Long id);
 }
