@@ -171,7 +171,7 @@ class ProviderRestControllerTest {
 
             @Test
             @DisplayName("returns 200 OK with updated provider data when input is valid")
-            void updateProviderById_withValidData_returns200WithUpdatedFruitData() throws Exception {
+            void updateProviderById_withValidData_returns200WithUpdatedProviderData() throws Exception {
 
                 UpdateProviderRequestDTO updateProviderRequestDTO = new UpdateProviderRequestDTO(PROVIDER_NAME, COUNTRY);
 
@@ -191,7 +191,7 @@ class ProviderRestControllerTest {
 
             @Test
             @DisplayName("returns 200 OK with updated provider data when Name is null and country valid")
-            void updateProviderById_withNullName_returns200WithUpdatedFruitData() throws Exception {
+            void updateProviderById_withNullName_returns200WithUpdatedProviderData() throws Exception {
                 UpdateProviderRequestDTO updateProviderRequestDTO = new UpdateProviderRequestDTO(null, COUNTRY);
 
                 when(updateProviderByIdUseCase.execute(ID, updateProviderRequestDTO)).thenReturn(PROVIDER);
@@ -211,7 +211,7 @@ class ProviderRestControllerTest {
 
             @Test
             @DisplayName("returns 200 OK with updated provider data when Name is valid and country null")
-            void updateProviderById_withNullMagnitudeAndWeightAmount_returns200WithUpdatedFruitData() throws Exception {
+            void updateProviderById_withNullMagnitudeAndWeightAmount_returns200WithUpdatedProviderData() throws Exception {
                 UpdateProviderRequestDTO updateProviderRequestDTO = new UpdateProviderRequestDTO(PROVIDER_NAME, null);
 
                 when(updateProviderByIdUseCase.execute(ID, updateProviderRequestDTO)).thenReturn(PROVIDER);
@@ -303,8 +303,8 @@ class ProviderRestControllerTest {
             }
 
             @Test
-            @DisplayName("returns 404 Provider Not Found when the service throws a FruitNotFoundException")
-            void updateProviderById_returns404WhenFruitNotFoundExceptionIsThrown() throws Exception {
+            @DisplayName("returns 404 Provider Not Found when the service throws a ProviderNotFoundException")
+            void updateProviderById_returns404WhenProviderNotFoundExceptionIsThrown() throws Exception {
                 UpdateProviderRequestDTO updateProviderRequestDTO = new UpdateProviderRequestDTO(PROVIDER_NAME, COUNTRY);
                 String exceptionMessage = "There are no providers with the id";
 
@@ -319,7 +319,6 @@ class ProviderRestControllerTest {
 
                 verify(updateProviderByIdUseCase).execute(ID, updateProviderRequestDTO);
             }
-
         }
     }
 }
