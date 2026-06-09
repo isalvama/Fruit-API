@@ -152,16 +152,164 @@ mvn test -Dspring.profiles.active=test
 
 ## 📂 Project Structure
 ```text
-src/main/java/cat/itacademy/s04/s02/n01/
-├── common/             # Shared Value Objects & Exceptions
-├── fruit/
-│   ├── application/    # Use Cases & Services
-│   ├── domain/         # Models & Business Rules
-│   └── infrastructure/ # JPA Entities, Repositories, Controllers
-└── provider/
-    ├── application/    # Use Cases & Services
-    ├── domain/         # Models & Business Rules
-    └── infrastructure/ # JPA Entities, Repositories, Controllers
+.
+├── Dockerfile
+├── HELP.md
+├── README.md
+├── docker-compose.yml
+├── mvnw
+├── mvnw.cmd
+├── pom.xml
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── cat
+│   │   │       └── itacademy
+│   │   │           └── s04
+│   │   │               └── s02
+│   │   │                   └── n01
+│   │   │                       ├── FruitApiH2Application.java
+│   │   │                       ├── common
+│   │   │                       │   ├── domain
+│   │   │                       │   └── exception_handler
+│   │   │                       ├── fruit
+│   │   │                       │   ├── application
+│   │   │                       │   ├── controller
+│   │   │                       │   └── domain
+│   │   │                       └── provider
+│   │   │                           ├── application
+│   │   │                           ├── controller
+│   │   │                           └── domain
+│   │   └── resources
+│   │       ├── application-prod.properties
+│   │       ├── application-test.properties
+│   │       ├── application.properties
+│   │       ├── static
+│   │       └── templates
+│   └── test
+│       └── java
+│           └── cat
+│               └── itacademy
+│                   └── s04
+│                       └── s02
+│                           └── n01
+│                               ├── FruitIntegrationTest.java
+│                               ├── fruit
+│                               │   ├── application
+│                               │   ├── common
+│                               │   ├── controller
+│                               │   └── domain
+│                               └── provider
+│                                   ├── application
+│                                   ├── controller
+│                                   └── domain
+└── target
+    ├── classes
+    │   ├── application-prod.properties
+    │   ├── application-test.properties
+    │   ├── application.properties
+    │   └── cat
+    │       └── itacademy
+    │           └── s04
+    │               └── s02
+    │                   └── n01
+    │                       ├── FruitApiH2Application.class
+    │                       ├── common
+    │                       │   ├── domain
+    │                       │   │   ├── exception
+    │                       │   │   └── value_object
+    │                       │   └── exception_handler
+    │                       │       └── ExceptionHandlingAdvice.class
+    │                       ├── fruit
+    │                       │   ├── application
+    │                       │   │   ├── repository
+    │                       │   │   ├── service
+    │                       │   │   └── usecases
+    │                       │   ├── controller
+    │                       │   │   ├── FruitResponseDTO.class
+    │                       │   │   ├── FruitRestController.class
+    │                       │   │   ├── RegisterFruitRequestDTO.class
+    │                       │   │   ├── UpdateFruitRequestDTO.class
+    │                       │   │   └── exception
+    │                       │   └── domain
+    │                       │       ├── exception
+    │                       │       └── model
+    │                       └── provider
+    │                           ├── application
+    │                           │   ├── repository
+    │                           │   ├── service
+    │                           │   └── usecase
+    │                           ├── controller
+    │                           │   ├── CreateProviderRequestDTO.class
+    │                           │   ├── ProviderResponseDTO.class
+    │                           │   ├── ProviderRestController.class
+    │                           │   ├── UpdateProviderRequestDTO.class
+    │                           │   └── exception
+    │                           └── domain
+    │                               ├── exception
+    │                               └── model
+    ├── generated-sources
+    │   └── annotations
+    ├── generated-test-sources
+    │   └── test-annotations
+    ├── maven-status
+    │   └── maven-compiler-plugin
+    │       ├── compile
+    │       │   └── default-compile
+    │       │       ├── createdFiles.lst
+    │       │       └── inputFiles.lst
+    │       └── testCompile
+    │           └── default-testCompile
+    │               ├── createdFiles.lst
+    │               └── inputFiles.lst
+    └── test-classes
+        └── cat
+            └── itacademy
+                └── s04
+                    └── s02
+                        └── n01
+                            ├── FruitIntegrationTest$CreateFruit.class
+                            ├── FruitIntegrationTest$DeleteFruitById.class
+                            ├── FruitIntegrationTest$DeleteProviderById.class
+                            ├── FruitIntegrationTest$GetFruitById.class
+                            ├── FruitIntegrationTest$GetFruits.class
+                            ├── FruitIntegrationTest$GetFruitsByProviderId.class
+                            ├── FruitIntegrationTest$RegisterProvider.class
+                            ├── FruitIntegrationTest$UpdateFruitById.class
+                            ├── FruitIntegrationTest$UpdateProviderById.class
+                            ├── FruitIntegrationTest.class
+                            ├── fruit
+                            │   ├── application
+                            │   │   ├── repository
+                            │   │   └── service
+                            │   ├── common
+                            │   │   └── domain
+                            │   ├── controller
+                            │   │   ├── CreateFruitRequestDTOTest.class
+                            │   │   ├── FruitRestControllerTest$CreateFruit.class
+                            │   │   ├── FruitRestControllerTest$GetFruitById.class
+                            │   │   ├── FruitRestControllerTest$GetFruits.class
+                            │   │   ├── FruitRestControllerTest$GetFruitsByProviderId.class
+                            │   │   ├── FruitRestControllerTest$UpdateFruitById$DeleteFruitById.class
+                            │   │   ├── FruitRestControllerTest$UpdateFruitById.class
+                            │   │   ├── FruitRestControllerTest.class
+                            │   │   └── UpdateFruitRequestDTOTest.class
+                            │   └── domain
+                            │       └── model
+                            └── provider
+                                ├── application
+                                │   ├── repository
+                                │   └── service
+                                ├── controller
+                                │   ├── ProviderRestControllerTest$RegisterProvider$DeleteFruitById.class
+                                │   ├── ProviderRestControllerTest$RegisterProvider$UpdateProviderById.class
+                                │   ├── ProviderRestControllerTest$RegisterProvider.class
+                                │   └── ProviderRestControllerTest.class
+                                └── domain
+                                    └── model
+
+103 directories, 52 files
+
 ```
 ---
 
