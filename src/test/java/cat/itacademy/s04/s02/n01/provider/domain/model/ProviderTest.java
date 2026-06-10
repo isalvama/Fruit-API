@@ -1,6 +1,7 @@
 package cat.itacademy.s04.s02.n01.provider.domain.model;
 
 import cat.itacademy.s04.s02.n01.common.domain.value_object.Name;
+import cat.itacademy.s04.s02.n01.provider.domain.value_object.Country;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

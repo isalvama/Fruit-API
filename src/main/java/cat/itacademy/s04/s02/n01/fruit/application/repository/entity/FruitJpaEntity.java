@@ -1,9 +1,7 @@
 package cat.itacademy.s04.s02.n01.fruit.application.repository.entity;
 
 import cat.itacademy.s04.s02.n01.provider.application.repository.entity.ProviderJPAEntity;
-import cat.itacademy.s04.s02.n01.provider.domain.model.Provider;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

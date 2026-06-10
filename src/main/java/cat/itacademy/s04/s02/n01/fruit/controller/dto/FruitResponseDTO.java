@@ -1,4 +1,4 @@
-package cat.itacademy.s04.s02.n01.fruit.controller;
+package cat.itacademy.s04.s02.n01.fruit.controller.dto;
 
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
 

@@ -2,7 +2,7 @@ package cat.itacademy.s04.s02.n01.fruit.application.repository.entity;
 
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
 import cat.itacademy.s04.s02.n01.common.domain.value_object.Name;
-import cat.itacademy.s04.s02.n01.fruit.domain.model.Weight;
+import cat.itacademy.s04.s02.n01.fruit.domain.value_object.Weight;
 import cat.itacademy.s04.s02.n01.provider.application.repository.entity.ProviderMapper;
 
 public class FruitMapper {

@@ -1,4 +1,4 @@
-package cat.itacademy.s04.s02.n01.provider.controller;
+package cat.itacademy.s04.s02.n01.provider.controller.dto;
 
 import cat.itacademy.s04.s02.n01.provider.domain.model.Provider;
 

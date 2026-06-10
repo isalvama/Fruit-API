@@ -1,6 +1,7 @@
 package cat.itacademy.s04.s02.n01.fruit.domain.model;
 
 import cat.itacademy.s04.s02.n01.common.domain.value_object.Name;
+import cat.itacademy.s04.s02.n01.fruit.domain.value_object.Weight;
 import cat.itacademy.s04.s02.n01.provider.domain.model.Provider;
 import lombok.Getter;
 import lombok.Setter;
