@@ -1,6 +1,7 @@
 package cat.itacademy.s04.s02.n01.provider.domain.model;
 
 import cat.itacademy.s04.s02.n01.provider.domain.exception.InvalidCountryException;
+import cat.itacademy.s04.s02.n01.provider.domain.value_object.Country;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

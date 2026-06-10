@@ -5,11 +5,11 @@ import cat.itacademy.s04.s02.n01.fruit.application.repository.JPAFruitRepository
 import cat.itacademy.s04.s02.n01.fruit.application.usecases.RegisterFruitUseCase;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
 import cat.itacademy.s04.s02.n01.common.domain.value_object.Name;
-import cat.itacademy.s04.s02.n01.fruit.domain.model.Weight;
+import cat.itacademy.s04.s02.n01.fruit.domain.value_object.Weight;
 import cat.itacademy.s04.s02.n01.provider.application.repository.JPAProviderRepositoryImpl;
 import cat.itacademy.s04.s02.n01.provider.application.repository.ProviderRepository;
 import cat.itacademy.s04.s02.n01.provider.controller.exception.ProviderNotFoundException;
-import cat.itacademy.s04.s02.n01.provider.domain.model.Country;
+import cat.itacademy.s04.s02.n01.provider.domain.value_object.Country;
 import cat.itacademy.s04.s02.n01.provider.domain.model.Provider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

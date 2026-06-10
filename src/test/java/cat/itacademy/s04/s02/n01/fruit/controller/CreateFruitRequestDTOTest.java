@@ -1,5 +1,6 @@
 package cat.itacademy.s04.s02.n01.fruit.controller;
 
+import cat.itacademy.s04.s02.n01.fruit.controller.dto.RegisterFruitRequestDTO;
 import cat.itacademy.s04.s02.n01.fruit.controller.exception.InvalidRequestException;
 import org.junit.jupiter.api.Test;
 

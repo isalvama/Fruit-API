@@ -2,12 +2,12 @@ package cat.itacademy.s04.s02.n01.fruit.application.service;
 
 import cat.itacademy.s04.s02.n01.fruit.application.repository.FruitRepository;
 import cat.itacademy.s04.s02.n01.fruit.application.usecases.UpdateFruitByIdUseCase;
-import cat.itacademy.s04.s02.n01.fruit.controller.UpdateFruitRequestDTO;
+import cat.itacademy.s04.s02.n01.fruit.controller.dto.UpdateFruitRequestDTO;
 import cat.itacademy.s04.s02.n01.fruit.controller.exception.FruitNotFoundException;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
 import cat.itacademy.s04.s02.n01.common.domain.value_object.Name;
-import cat.itacademy.s04.s02.n01.fruit.domain.model.Magnitude;
-import cat.itacademy.s04.s02.n01.fruit.domain.model.Weight;
+import cat.itacademy.s04.s02.n01.fruit.domain.value_object.Magnitude;
+import cat.itacademy.s04.s02.n01.fruit.domain.value_object.Weight;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package cat.itacademy.s04.s02.n01.fruit.domain.model;
+package cat.itacademy.s04.s02.n01.fruit.domain.value_object;
 
 import cat.itacademy.s04.s02.n01.fruit.domain.exception.InvalidWeightException;
 import lombok.Getter;

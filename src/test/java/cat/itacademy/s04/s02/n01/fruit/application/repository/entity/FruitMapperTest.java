@@ -2,13 +2,10 @@ package cat.itacademy.s04.s02.n01.fruit.application.repository.entity;
 
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
 import cat.itacademy.s04.s02.n01.common.domain.value_object.Name;
-import cat.itacademy.s04.s02.n01.fruit.domain.model.Magnitude;
-import cat.itacademy.s04.s02.n01.fruit.domain.model.Weight;
-import cat.itacademy.s04.s02.n01.provider.application.repository.ProviderRepository;
+import cat.itacademy.s04.s02.n01.fruit.domain.value_object.Magnitude;
+import cat.itacademy.s04.s02.n01.fruit.domain.value_object.Weight;
 import cat.itacademy.s04.s02.n01.provider.application.repository.entity.ProviderJPAEntity;
-import cat.itacademy.s04.s02.n01.provider.application.usecase.RegisterProviderUseCase;
-import cat.itacademy.s04.s02.n01.provider.controller.ProviderResponseDTO;
-import cat.itacademy.s04.s02.n01.provider.domain.model.Country;
+import cat.itacademy.s04.s02.n01.provider.domain.value_object.Country;
 import cat.itacademy.s04.s02.n01.provider.domain.model.Provider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
