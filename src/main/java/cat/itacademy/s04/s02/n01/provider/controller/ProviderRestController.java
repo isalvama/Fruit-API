@@ -1,9 +1,12 @@
 package cat.itacademy.s04.s02.n01.provider.controller;
 
-import cat.itacademy.s04.s02.n01.fruit.controller.FruitResponseDTO;
+import cat.itacademy.s04.s02.n01.fruit.controller.dto.FruitResponseDTO;
 import cat.itacademy.s04.s02.n01.provider.application.usecase.DeleteProviderByIdUseCase;
 import cat.itacademy.s04.s02.n01.provider.application.usecase.RegisterProviderUseCase;
 import cat.itacademy.s04.s02.n01.provider.application.usecase.UpdateProviderByIdUseCase;
+import cat.itacademy.s04.s02.n01.provider.controller.dto.CreateProviderRequestDTO;
+import cat.itacademy.s04.s02.n01.provider.controller.dto.ProviderResponseDTO;
+import cat.itacademy.s04.s02.n01.provider.controller.dto.UpdateProviderRequestDTO;
 import cat.itacademy.s04.s02.n01.provider.domain.model.Provider;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;

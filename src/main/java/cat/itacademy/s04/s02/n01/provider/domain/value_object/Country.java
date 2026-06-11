@@ -1,4 +1,4 @@
-package cat.itacademy.s04.s02.n01.provider.domain.model;
+package cat.itacademy.s04.s02.n01.provider.domain.value_object;
 
 import cat.itacademy.s04.s02.n01.provider.domain.exception.InvalidCountryException;
 

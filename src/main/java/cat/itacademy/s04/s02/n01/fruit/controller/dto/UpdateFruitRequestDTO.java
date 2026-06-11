@@ -1,7 +1,7 @@
-package cat.itacademy.s04.s02.n01.fruit.controller;
+package cat.itacademy.s04.s02.n01.fruit.controller.dto;
 
 import cat.itacademy.s04.s02.n01.fruit.controller.exception.InvalidRequestException;
-import cat.itacademy.s04.s02.n01.fruit.domain.model.Magnitude;
+import cat.itacademy.s04.s02.n01.fruit.domain.value_object.Magnitude;
 import jakarta.validation.constraints.*;
 
 public record UpdateFruitRequestDTO(

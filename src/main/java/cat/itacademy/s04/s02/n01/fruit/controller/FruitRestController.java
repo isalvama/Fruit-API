@@ -1,6 +1,9 @@
 package cat.itacademy.s04.s02.n01.fruit.controller;
 
 import cat.itacademy.s04.s02.n01.fruit.application.usecases.*;
+import cat.itacademy.s04.s02.n01.fruit.controller.dto.FruitResponseDTO;
+import cat.itacademy.s04.s02.n01.fruit.controller.dto.RegisterFruitRequestDTO;
+import cat.itacademy.s04.s02.n01.fruit.controller.dto.UpdateFruitRequestDTO;
 import cat.itacademy.s04.s02.n01.fruit.domain.model.Fruit;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
